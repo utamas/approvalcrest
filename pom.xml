@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.shazam</groupId>
-	<artifactId>shazamcrest</artifactId>
-	<version>0.12-SNAPSHOT</version>
+	<groupId>com.approval</groupId>
+	<artifactId>approvalcrest</artifactId>
+	<version>0.13-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>Shazamcrest</name>
+	<name>Approvalcrest</name>
 	<description>Library that extends the functionality of hamcrest</description>
-	<url>http://github.com/shazam/shazamcrest</url>
+	<url>http://github.com/karsaig/approvalcrest</url>
 
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
@@ -25,9 +25,9 @@
 	<developers />
 
 	<scm>
-		<connection>scm:git:git://github.com/shazam/shazamcrest.git</connection>
-		<developerConnection>scm:git:git@github.com:shazam/shazamcrest.git</developerConnection>
-		<url>http://github.com/shazam/shazamcrest</url>
+		<connection>scm:git:git://github.com/karsaig/approvalcrest.git</connection>
+		<developerConnection>scm:git:git@github.com/karsaig/approvalcrest.git</developerConnection>
+		<url>http://github.com/karsaig/approvalcrest</url>
 	</scm>
 
 	<profiles>
