@@ -1,11 +1,15 @@
 package com.github.karsaig.approvalcrest.matcher;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
 import org.junit.Test;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 
 /**
  * Utility class with methods for creating the JSON files for
@@ -14,28 +18,36 @@ import org.junit.Test;
  * @author Andras_Gyuro
  *
  */
-public class JsonMatcherUtils {
+public class FileStoreMatcherUtils {
 
 	public static final Object SEPARATOR = "-";
 	private static final String SRC_TEST_JAVA_PATH = "src" + File.separator + "test" + File.separator + "java"
 			+ File.separator;
-	private static final String FILE_EXTENSION = ".json";
 	private static final String APPROVED_NAME_PART = "approved";
 	private static final String NOT_APPROVED_NAME_PART = "not-approved";
+	private final String fileExtension;
+
+	public FileStoreMatcherUtils(String fileExtension) {
+		this.fileExtension = fileExtension;
+	}
 
 	/**
-	 * Creates file with '-not-approved' suffix and .json extension and writes the
-	 * jsonObject in it.
+	 * Creates file with '-not-approved' suffix and .json extension and writes
+	 * the jsonObject in it.
 	 *
-	 * @param fileNameWithPath specifies the name of the file with full path (relative to project root)
-	 * @param jsonObject the file's content
-	 * @throws IOException exception thrown when failed to create the file
+	 * @param fileNameWithPath
+	 *            specifies the name of the file with full path (relative to
+	 *            project root)
+	 * @param jsonObject
+	 *            the file's content
+	 * @throws IOException
+	 *             exception thrown when failed to create the file
 	 */
 	public String createNotApproved(final String fileNameWithPath, final String jsonObject, final String comment)
 			throws IOException {
 		File file = new File(getFullFileName(fileNameWithPath, false));
 		file.getParentFile().mkdirs();
-		Writer writer = new FileWriter(file);
+		BufferedWriter writer = Files.newWriter(file, Charsets.UTF_8);
 		writer.append("/*" + comment + "*/");
 		writer.append("\n");
 		writer.append(jsonObject);
@@ -43,10 +55,23 @@ public class JsonMatcherUtils {
 		return file.getName();
 	}
 
+	public String readFile(File file) throws IOException {
+		String fileContent = Files.toString(file, Charsets.UTF_8);
+
+		if (fileContent.startsWith("/*")) {
+			int index = fileContent.indexOf("*/\n");
+			if (-1 < index) {
+				return fileContent.substring(index + 3);
+			}
+		}
+		return fileContent;
+	}
+
 	/**
 	 * Gets file with '-approved' suffix and .json extension and returns it.
 	 *
-	 * @param fileNameWithPath the name of the file with full path (relative to project root)
+	 * @param fileNameWithPath
+	 *            the name of the file with full path (relative to project root)
 	 * @return the {@link File} object
 	 */
 	public File getApproved(final String fileNameWithPath) {
@@ -55,7 +80,8 @@ public class JsonMatcherUtils {
 	}
 
 	/**
-	 * Returns the name of the test method, in which the call was originated from.
+	 * Returns the name of the test method, in which the call was originated
+	 * from.
 	 *
 	 * @return test method name in String
 	 */
@@ -65,7 +91,8 @@ public class JsonMatcherUtils {
 	}
 
 	/**
-	 * Returns the name of the test class file which the call was originated from.
+	 * Returns the name of the test class file which the call was originated
+	 * from.
 	 *
 	 * @return test method's class name
 	 */
@@ -75,7 +102,8 @@ public class JsonMatcherUtils {
 	}
 
 	/**
-	 * Returns the absolute path of the test class in which the call was originated from.
+	 * Returns the absolute path of the test class in which the call was
+	 * originated from.
 	 *
 	 * @return test method name in String
 	 */
@@ -83,7 +111,8 @@ public class JsonMatcherUtils {
 		StackTraceElement testStackTraceElement = getTestStackTraceElement(Thread.currentThread().getStackTrace());
 		String fileName = testStackTraceElement.getFileName().substring(0,
 				testStackTraceElement.getFileName().lastIndexOf("."));
-		return SRC_TEST_JAVA_PATH + testStackTraceElement.getClassName().replace(".", File.separator).replace(fileName, "");
+		return SRC_TEST_JAVA_PATH
+				+ testStackTraceElement.getClassName().replace(".", File.separator).replace(fileName, "");
 	}
 
 	private StackTraceElement getTestStackTraceElement(final StackTraceElement[] stackTrace) {
@@ -128,7 +157,7 @@ public class JsonMatcherUtils {
 		} else {
 			stringBuilder.append(NOT_APPROVED_NAME_PART);
 		}
-		stringBuilder.append(FILE_EXTENSION);
+		stringBuilder.append(fileExtension);
 
 		return stringBuilder.toString();
 	}

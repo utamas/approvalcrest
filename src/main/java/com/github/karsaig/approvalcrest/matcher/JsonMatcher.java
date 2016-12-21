@@ -4,7 +4,7 @@ import static com.github.karsaig.approvalcrest.BeanFinder.findBeanAt;
 import static com.github.karsaig.approvalcrest.CyclicReferenceDetector.getClassesWithCircularReferences;
 import static com.github.karsaig.approvalcrest.FieldsIgnorer.MARKER;
 import static com.github.karsaig.approvalcrest.FieldsIgnorer.findPaths;
-import static com.github.karsaig.approvalcrest.matcher.JsonMatcherUtils.SEPARATOR;
+import static com.github.karsaig.approvalcrest.matcher.FileStoreMatcherUtils.SEPARATOR;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
@@ -58,7 +58,7 @@ import com.google.gson.JsonParser;
  * @author Andras_Gyuro
  *
  */
-public class JsonMatcher<T> extends DiagnosingMatcher<T> implements CustomisableMatcher<T> {
+public class JsonMatcher<T> extends DiagnosingMatcher<T> implements CustomisableMatcher<T>, ApprovedFileMatcher<JsonMatcher<T>> {
 
 	private static final int NUM_OF_HASH_CHARS = 6;
 
@@ -76,7 +76,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	private final List<Matcher<String>> patternsToIgnore = new ArrayList<Matcher<String>>();
 	private final Set<Class<?>> circularReferenceTypes = new HashSet<Class<?>>();
 	private JsonElement expected;
-	private JsonMatcherUtils jsonMatcherUtils = new JsonMatcherUtils();
+	private FileStoreMatcherUtils fileStoreMatcherUtils = new FileStoreMatcherUtils(".json");
 
 	private final Set<String> pathsToIgnore = new HashSet<String>();
 	private GsonConfiguration configuration;
@@ -120,40 +120,19 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		return this;
 	}
 
-	/**
-	 * Concatenates a unique ID to the generated file name. Useful for test cases
-	 * containing multiple verifications.
-	 *
-	 * @param uniqueId
-	 *          a {@link String} object, that uniquely identifies the file.
-	 * @return current instance
-	 */
+	@Override
 	public JsonMatcher<T> withUniqueId(final String uniqueId) {
 		this.uniqueId = uniqueId;
 		return this;
 	}
 
-	/**
-	 * Sets the file name to the given parameter.
-	 *
-	 * @param customFileName
-	 *          a {@link String} object, which will be the base file name. The
-	 *          approved/not-approved identifier and file extension will still be
-	 *          concatenated to this.
-	 * @return current instance
-	 */
+	@Override
 	public JsonMatcher<T> withFileName(final String customFileName) {
 		this.customFileName = customFileName;
 		return this;
 	}
 
-	/**
-	 * Sets the file path to the given parameter.
-	 *
-	 * @param fileName
-	 *          a {@link String} object, which will be the file path.
-	 * @return current instance
-	 */
+	@Override
 	public JsonMatcher<T> withPathName(final String pathName) {
 		this.pathName = pathName;
 		return this;
@@ -188,8 +167,8 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	}
 
 	private void init() {
-		testMethodName = jsonMatcherUtils.getCallerTestMethodName();
-		testClassName = jsonMatcherUtils.getCallerTestClassName();
+		testMethodName = fileStoreMatcherUtils.getCallerTestMethodName();
+		testClassName = fileStoreMatcherUtils.getCallerTestClassName();
 
 		if (customFileName == null || customFileName.trim().isEmpty()) {
 			fileName = hashFileName(testMethodName);
@@ -201,7 +180,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		}
 		if (pathName == null || pathName.trim().isEmpty()) {
 			testClassNameHash = hashFileName(testClassName);
-			pathName = jsonMatcherUtils.getCallerTestClassPath() + File.separator + testClassNameHash;
+			pathName = fileStoreMatcherUtils.getCallerTestClassPath() + File.separator + testClassNameHash;
 		}
 
 		fileNameWithPath = pathName + File.separator + fileName;
@@ -224,7 +203,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	}
 
 	private void initExpectedFromFile() {
-		File approvedFile = jsonMatcherUtils.getApproved(fileNameWithPath);
+		File approvedFile = fileStoreMatcherUtils.getApproved(fileNameWithPath);
 
 		try {
 			String approvedJsonStr = readFile(approvedFile);
@@ -280,7 +259,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		if (testClassNameHash == null) {
 			result = "Expected file " + fileNameWithPath + "\n" + t.getMessage();
 		} else {
-			result = "Expected file " + testClassNameHash + File.separator + jsonMatcherUtils.getFullFileName(fileName, true)
+			result = "Expected file " + testClassNameHash + File.separator + fileStoreMatcherUtils.getFullFileName(fileName, true)
 					+ "\n" + t.getMessage();
 		}
 		return result;
@@ -291,7 +270,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	}
 
 	private void createNotApprovedFileIfNotExists(final Object toApprove, final Gson gson) {
-		File approvedFile = jsonMatcherUtils.getApproved(fileNameWithPath);
+		File approvedFile = fileStoreMatcherUtils.getApproved(fileNameWithPath);
 
 		if (!approvedFile.exists()) {
 			try {
@@ -304,7 +283,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 				} else {
 					content = removeSetMarker(gson.toJson(toApprove));
 				}
-				String createdFileName = jsonMatcherUtils.createNotApproved(fileNameWithPath, content, testClassName + "." + testMethodName);
+				String createdFileName = fileStoreMatcherUtils.createNotApproved(fileNameWithPath, content, testClassName + "." + testMethodName);
 				String message;
 				if (testClassNameHash == null) {
 					message = "Not approved file created '" + createdFileName
@@ -373,8 +352,8 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	}
 
 	@VisibleForTesting
-	void setJsonMatcherUtils(JsonMatcherUtils jsonMatcherUtils){
-		this.jsonMatcherUtils = jsonMatcherUtils;
+	void setJsonMatcherUtils(FileStoreMatcherUtils jsonMatcherUtils){
+		this.fileStoreMatcherUtils = jsonMatcherUtils;
 	}
 
 }

@@ -17,13 +17,16 @@ import org.junit.ComparisonFailure;
 
 /**
  * Modified version of {@link org.hamcrest.MatcherAssert}. If the matcher doesn't match, uses
- * {@link ResultComparison#containsComparableJson(Description)} to determine if a {@link ComparisonFailure} should be
+ * {@link ResultComparison#containsComparableJson(String, Description)} to determine if a {@link ComparisonFailure} should be
  * thrown. The exception is thrown instead of {@link AssertionError}, so that IDE like eclipse and IntelliJ can display a
  * pop-up window highlighting the String differences.
  */
 public class MatcherAssert {
 	/**
 	 * @see org.hamcrest.MatcherAssert#assertThat(Object, Matcher)
+	 * 
+	 * @param actual the object that will be matched against the matcher
+	 * @param matcher defines the condition the object have to fulfill in order to match
 	 */
 	public static <T> void assertThat(T actual, Matcher<? super T> matcher) {
         assertThat("", actual, matcher);

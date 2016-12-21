@@ -16,6 +16,7 @@ import org.hamcrest.Matcher;
  * custom matchers.
  */
 public interface CustomisableMatcher<T> extends Matcher<T> {
+	
 	/**
 	 * Specify the path of the field to be skipped from the matcher comparison.
 	 * Example:
@@ -62,7 +63,7 @@ public interface CustomisableMatcher<T> extends Matcher<T> {
      * Example:
      * <pre>assertThat(myBean, sameBeanAs(myResultBean).ignoring(is("mutationdate")).ignoring(containsString("version")))</pre>
      *
-     * @param pattern the Hamcrest matcher used to match field names.
+     * @param fieldNamePattern the Hamcrest matcher used to match field names.
      * @return the instance of the matcher
      */
     CustomisableMatcher<T> ignoring(Matcher<String> fieldNamePattern);

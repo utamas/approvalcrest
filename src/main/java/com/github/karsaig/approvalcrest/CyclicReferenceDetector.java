@@ -32,6 +32,7 @@ public class CyclicReferenceDetector {
      * Returns a set of classes that have circular reference.
      * 
      * @param object the object to check if it has circular reference fields
+     * @return a {@link Set} of {@link Class}es.
      */
     public static Set<Class<?>> getClassesWithCircularReferences(Object object) {
         CyclicReferenceDetector cyclicReferenceDetector = new CyclicReferenceDetector();

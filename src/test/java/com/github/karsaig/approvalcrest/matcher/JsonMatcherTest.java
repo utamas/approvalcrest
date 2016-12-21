@@ -38,7 +38,7 @@ public class JsonMatcherTest extends AbstractJsonMatcherTest {
     private static final String DUMMY_FILE_NAME_WITH_PATH = DUMMY_TEST_PATH + File.separator + CLASS_HASH + File.separator + METHOD_HASH;
     private static final String DUMMY_COMMENT = DUMMY_CLASS_NAME + "." + DUMMY_METHOD_NAME;
     @Mock
-    private JsonMatcherUtils utils;
+    private FileStoreMatcherUtils utils;
 
     @Test
     public void testRunShouldCreateNotApprovedFileWhenNotExists() throws IOException {
