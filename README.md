@@ -10,7 +10,7 @@ Assertions on complete beans are made simpler by serialising the actual and expe
 Usage
 -----
 
-###sameBeanAs
+### sameBeanAs
 
 Having a Person bean with the following structure:
 
