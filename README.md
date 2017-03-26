@@ -1,7 +1,7 @@
-Shazamcrest
+Approvalcrest
 ===========
 
-'Shazamcrest' is a library that extends the functionality of [hamcrest](http://hamcrest.org/).
+'Approvalcrest' is a library that extends the functionality of [Shazamcrest](https://github.com/shazam/shazamcrest).
 
 Assertions on complete beans are made simpler by serialising the actual and expected beans to json, and comparing
   the two. The diagnostics are leveraging the comparison functionality of IDEs like Eclipse or IntelliJ.
@@ -20,13 +20,14 @@ Having a Person bean with the following structure:
         |-- int streetNumber
         |-- String postcode</pre>
 
-to compare two Person beans with Shazamcrest we would write:
+to compare two Person beans with Approvalcrest we would write:
 
 <code>assertThat(actualPerson, sameBeanAs(expectedPerson));</code>
 
 instead of explicitly match every field of the bean and sub-beans:
 
-<pre><code>assertThat(actualPerson, allOf(
+```java
+assertThat(actualPerson, allOf(
         hasProperty("name", equalTo(expectedPerson.name)),
         hasProperty("surname", equalTo(expectedPerson.surname)),
         hasProperty("address", allOf(
@@ -34,7 +35,8 @@ instead of explicitly match every field of the bean and sub-beans:
             hasProperty("streetNumber", equalTo(expectedPerson.address.streetNumber)),
             hasProperty("postcode", equalTo(expectedPerson.address.postcode)))
         )
-    ));</code></pre>
+    ));
+```
 
 
 Error Messages
@@ -53,7 +55,7 @@ The exception thrown is a ComparisonFailure which can be used by IDEs like Eclip
 
 ![Comparison failure diagnostic](/DiffScreenshot.png)
 
-Note: in order to get the ComparisonFailure on mismatch the "assertThat" to use is com.shazam.shazamcrest.MatcherAssert.assertThat 
+Note: in order to get the ComparisonFailure on mismatch the "assertThat" to use is com.github.karsaig.approvalcrest.MatcherAssert.assertThat 
 rather than org.hamcrest.MatcherAssert.assertThat
 
 
@@ -127,10 +129,10 @@ produces the following representation:
 QuickStart
 -----
 
-To use, [download the zip](https://github.com/shazam/shazamcrest/archive/master.zip) or add the following to your project's pom.xml:
+To use add the following to your project's pom.xml:
  
     <dependency>
-        <groupId>com.shazam</groupId>
-        <artifactId>shazamcrest</artifactId>
-        <version>0.11</version>
+        <groupId>com.github.karsaig</groupId>
+        <artifactId>approvalcrest</artifactId>
+        <version>0.14</version>
     </dependency>
