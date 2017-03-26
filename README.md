@@ -10,6 +10,8 @@ Assertions on complete beans are made simpler by serialising the actual and expe
 Usage
 -----
 
+###sameBeanAs
+
 Having a Person bean with the following structure:
 
 <pre>Person person
@@ -22,7 +24,9 @@ Having a Person bean with the following structure:
 
 to compare two Person beans with Approvalcrest we would write:
 
-<code>assertThat(actualPerson, sameBeanAs(expectedPerson));</code>
+```java
+assertThat(actualPerson, sameBeanAs(expectedPerson));
+```
 
 instead of explicitly match every field of the bean and sub-beans:
 
@@ -37,6 +41,17 @@ assertThat(actualPerson, allOf(
         )
     ));
 ```
+
+###sameJsonAsApproved
+
+Creating the expected beans like the Person bean above can be a cumbersome task especially in more complex cases.
+sameJsonAsApproved meant to help with this task, instead of creating the expected bean to match against, it serializes the actual bean to json on the first run, and stores it in a file.
+By verifying and renaming the file, the user approves the content thus creating the expectations. Every additional run will use the file as the expected bean.
+
+
+
+###sameContentAsApproved
+
 
 
 Error Messages
