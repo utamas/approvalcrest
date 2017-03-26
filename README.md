@@ -42,7 +42,7 @@ assertThat(actualPerson, allOf(
     ));
 ```
 
-###sameJsonAsApproved
+### sameJsonAsApproved
 
 Creating the expected beans like the Person bean above can be a cumbersome task especially in more complex cases.
 sameJsonAsApproved meant to help with this task, instead of creating the expected bean to match against, it serializes the actual bean to json on the first run, and stores it in a file.
@@ -50,7 +50,7 @@ By verifying and renaming the file, the user approves the content thus creating 
 
 
 
-###sameContentAsApproved
+### sameContentAsApproved
 
 
 
