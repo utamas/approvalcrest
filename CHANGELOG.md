@@ -7,6 +7,7 @@ Version 0.15 - 2017/04/22
  - First release of ApprovalCrest
  - Added new matchers sameJsonAsApproved and sameContentAsApproved
  - Updated dependencies
+ - Added possibility to configre custom type adapters
 
 Version 0.11 - 2015/03/04
 -----
