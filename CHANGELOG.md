@@ -1,6 +1,13 @@
 Changelog
 ===========
 
+Version 0.15 - 2017/04/22
+-----
+
+ - First release of ApprovalCrest
+ - Added new matchers sameJsonAsApproved and sameContentAsApproved
+ - Updated dependencies
+
 Version 0.11 - 2015/03/04
 -----
 
