@@ -147,7 +147,7 @@ QuickStart
 To use add the following to your project's pom.xml:
  
     <dependency>
-        <groupId>com.github.karsaig</groupId>
-        <artifactId>approvalcrest</artifactId>
-        <version>0.14</version>
-    </dependency>
+		<groupId>com.github.karsaig</groupId>
+		<artifactId>approvalcrest</artifactId>
+		<version>0.15</version>
+	</dependency>
