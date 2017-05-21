@@ -1,4 +1,4 @@
-package com.google.gson.graph;
+package com.github.karsaig.json.graph;
 
 import org.jetbrains.annotations.NotNull;
 

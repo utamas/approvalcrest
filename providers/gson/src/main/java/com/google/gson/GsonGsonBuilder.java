@@ -6,35 +6,39 @@ import java.util.Set;
 import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 
+import com.github.karsaig.json.*;
+import com.github.karsaig.json.GsonBuilder;
+import com.github.karsaig.json.JsonSerializer;
+
 // FIXME: rename me.
-public class GsonGsonBuilder implements GsonBuilder {
+public class GsonGsonBuilder implements com.github.karsaig.json.GsonBuilder {
     @Override
-    public @NotNull GsonBuilder initialize() {
+    public @NotNull com.github.karsaig.json.GsonBuilder initialize() {
         return this;
     }
 
     @Override
-    public @NotNull GsonBuilder registerTypesToIgnore(List<Class<?>> typesToIgnore) {
+    public @NotNull com.github.karsaig.json.GsonBuilder registerTypesToIgnore(List<Class<?>> typesToIgnore) {
         return this;
     }
 
     @Override
-    public @NotNull GsonBuilder registerFieldsToIgnore(List<Matcher<String>> fieldsToIgnore) {
+    public @NotNull com.github.karsaig.json.GsonBuilder registerFieldsToIgnore(List<Matcher<String>> fieldsToIgnore) {
         return this;
     }
 
     @Override
-    public @NotNull GsonBuilder registerCircularReferenceTypes(Set<Class<?>> circularReferenceTypes) {
+    public @NotNull com.github.karsaig.json.GsonBuilder registerCircularReferenceTypes(Set<Class<?>> circularReferenceTypes) {
         return this;
     }
 
     @Override
-    public @NotNull GsonBuilder setPrettyPrinting() {
+    public @NotNull com.github.karsaig.json.GsonBuilder setPrettyPrinting() {
         return this;
     }
 
     @Override
-    public @NotNull GsonBuilder addExtraConfiguration(GsonConfiguration additionalConfig) {
+    public @NotNull com.github.karsaig.json.GsonBuilder addExtraConfiguration(GsonConfiguration additionalConfig) {
         return this;
     }
 
@@ -44,7 +48,7 @@ public class GsonGsonBuilder implements GsonBuilder {
     }
 
     @Override
-    public @NotNull Gson build() {
+    public @NotNull com.github.karsaig.json.Gson build() {
         return new GsonDelegate();
     }
 }

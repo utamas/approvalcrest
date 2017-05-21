@@ -24,12 +24,12 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonArrayProvider;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonParserProvider;
+import com.github.karsaig.json.Gson;
+import com.github.karsaig.json.JsonArray;
+import com.github.karsaig.json.JsonArrayProvider;
+import com.github.karsaig.json.JsonElement;
+import com.github.karsaig.json.JsonParser;
+import com.github.karsaig.json.JsonParserProvider;
 
 /**
  * Responsible for traversing the Json tree and ignore the specified set of field paths.

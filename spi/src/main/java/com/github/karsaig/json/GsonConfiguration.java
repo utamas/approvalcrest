@@ -1,4 +1,4 @@
-package com.google.gson;
+package com.github.karsaig.json;
 
 /**
  * Configuration file for {@link GsonProvider}.

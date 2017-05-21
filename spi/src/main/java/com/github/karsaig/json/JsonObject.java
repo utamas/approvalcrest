@@ -1,4 +1,4 @@
-package com.google.gson;
+package com.github.karsaig.json;
 
 public interface JsonObject extends JsonElement {
     JsonElement get(String field);

@@ -17,9 +17,9 @@ import java.util.Set;
 import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.GsonConfiguration;
+import com.github.karsaig.json.Gson;
+import com.github.karsaig.json.GsonBuilder;
+import com.github.karsaig.json.GsonConfiguration;
 
 public final class GsonProvider {
     public static @NotNull Gson gson(List<Class<?>> typesToIgnore, List<Matcher<String>> fieldsToIgnore, Set<Class<?>> circularReferenceTypes) {

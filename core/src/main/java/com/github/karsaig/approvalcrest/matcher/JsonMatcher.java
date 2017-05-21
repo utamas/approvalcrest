@@ -29,11 +29,11 @@ import com.github.karsaig.approvalcrest.ComparisonDescription;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import com.google.gson.Gson;
-import com.google.gson.GsonConfiguration;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonParserProvider;
+import com.github.karsaig.json.Gson;
+import com.github.karsaig.json.GsonConfiguration;
+import com.github.karsaig.json.JsonElement;
+import com.github.karsaig.json.JsonParser;
+import com.github.karsaig.json.JsonParserProvider;
 
 /**
  * <p>

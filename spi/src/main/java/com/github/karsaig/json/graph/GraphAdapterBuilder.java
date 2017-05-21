@@ -1,6 +1,6 @@
-package com.google.gson.graph;
+package com.github.karsaig.json.graph;
 
-import com.google.gson.GsonBuilder;
+import com.github.karsaig.json.GsonBuilder;
 
 public interface GraphAdapterBuilder {
 

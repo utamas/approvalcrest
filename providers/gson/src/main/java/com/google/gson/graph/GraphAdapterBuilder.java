@@ -32,7 +32,7 @@ public final class GraphAdapterBuilder {
 	private final Map<Type, InstanceCreator<?>> instanceCreators = new HashMap<Type, InstanceCreator<?>>();
 	private final ConstructorConstructor constructorConstructor = new ConstructorConstructor(instanceCreators);
 
-	public GraphAdapterBuilder addType(Type type) {
+	public com.github.karsaig.json.graph.GraphAdapterBuilder addType(Type type) {
 		final ObjectConstructor<?> objectConstructor = constructorConstructor.get(TypeToken.get(type));
 		InstanceCreator<Object> instanceCreator = new InstanceCreator<Object>() {
 			public Object createInstance(Type type) {
@@ -42,7 +42,7 @@ public final class GraphAdapterBuilder {
 		return addType(type, instanceCreator);
 	}
 
-	public GraphAdapterBuilder addType(Type type, InstanceCreator<?> instanceCreator) {
+	public com.github.karsaig.json.graph.GraphAdapterBuilder addType(Type type, InstanceCreator<?> instanceCreator) {
 		if (type == null || instanceCreator == null) {
 			throw new NullPointerException();
 		}

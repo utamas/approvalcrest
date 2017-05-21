@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.matcher.GsonProvider;
 
-import com.google.gson.Gson;
+import com.github.karsaig.json.Gson;
 
 public class GsonProviderTest {
     @Test

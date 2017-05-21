@@ -31,9 +31,9 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.github.karsaig.approvalcrest.ComparisonDescription;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonConfiguration;
-import com.google.gson.JsonElement;
+import com.github.karsaig.json.Gson;
+import com.github.karsaig.json.GsonConfiguration;
+import com.github.karsaig.json.JsonElement;
 
 /**
  * Extends the functionalities of {@link DiagnosingMatcher} with the possibility to specify fields and object types to
