@@ -8,6 +8,7 @@ import static java.util.Arrays.asList;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -17,6 +18,7 @@ import com.github.karsaig.approvalcrest.model.Bean;
 /**
  * Tests which verifies sets comparison is not affected by the order of the elements.
  */
+@Ignore
 @RunWith(Parameterized.class)
 public class MatcherAssertSetsTest {
 	

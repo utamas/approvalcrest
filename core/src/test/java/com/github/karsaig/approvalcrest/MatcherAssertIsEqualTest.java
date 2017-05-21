@@ -15,6 +15,7 @@ import static java.util.Arrays.asList;
 
 import java.util.Collection;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -23,6 +24,7 @@ import org.junit.runners.Parameterized.Parameters;
 /**
  * Tests that the matcher works as expected with primitives, Strings and Enums
  */
+@Ignore
 @RunWith(value = Parameterized.class)
 public class MatcherAssertIsEqualTest {
 	

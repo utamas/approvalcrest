@@ -1,13 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.karsaig</groupId>
-    <artifactId>approvalcrest</artifactId>
-    <version>0.16-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Approvalcrest</name>
-    <description>Library that extends the functionality of hamcrest</description>
-    <url>http://github.com/karsaig/approvalcrest</url>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -15,8 +8,22 @@
         <version>7</version>
     </parent>
 
+    <groupId>com.github.karsaig.approvalcrest</groupId>
+    <artifactId>approvalcrest</artifactId>
+    <version>0.16-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <name>Approvalcrest</name>
+    <description>Library that extends the functionality of hamcrest</description>
+
+    <url>http://github.com/karsaig/approvalcrest</url>
+
     <modules>
+        <module>spi</module>
         <module>core</module>
+        <module>providers</module>
+        <module>functional-tests</module>
     </modules>
 
     <properties>
@@ -56,8 +63,32 @@
         </repository>
     </distributionManagement>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
+    </dependencies>
+
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.github.karsaig.approvalcrest</groupId>
+                <artifactId>spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.karsaig.approvalcrest.providers</groupId>
+                <artifactId>gson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>15.0</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.skyscreamer</groupId>
                 <artifactId>jsonassert</artifactId>

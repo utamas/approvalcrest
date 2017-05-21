@@ -19,6 +19,7 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.junit.Assert.fail;
 
 import org.hamcrest.MatcherAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.model.ParentBean;
@@ -26,6 +27,7 @@ import com.github.karsaig.approvalcrest.model.ParentBean;
 /**
  * Tests which verify the diagnostic displayed when a custom matcher fails.
  */
+@Ignore
 public class MatcherAssertCustomMatchingDiagnosticTest {
 
 	@Test

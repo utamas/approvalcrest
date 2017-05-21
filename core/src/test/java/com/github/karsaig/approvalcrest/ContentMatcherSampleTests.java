@@ -1,9 +1,11 @@
 package com.github.karsaig.approvalcrest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.matcher.Matchers;
 
+@Ignore
 public class ContentMatcherSampleTests {
 
 	@Test

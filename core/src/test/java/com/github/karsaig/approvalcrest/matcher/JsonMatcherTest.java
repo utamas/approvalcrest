@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -25,6 +26,7 @@ import com.github.karsaig.approvalcrest.model.BeanWithPrimitives;
  * @author Andras_Gyuro
  *
  */
+@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class JsonMatcherTest extends AbstractJsonMatcherTest {
 

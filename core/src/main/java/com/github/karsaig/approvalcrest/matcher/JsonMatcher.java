@@ -30,8 +30,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
+import com.google.gson.GsonConfiguration;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonParserProvider;
 
 /**
  * <p>
@@ -193,7 +195,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	private JsonElement getAsJsonElement(final Gson gson, final Object object) {
 		JsonElement result;
 		if (object instanceof String) {
-			JsonParser jsonParser = new JsonParser();
+			JsonParser jsonParser = JsonParserProvider.create();
 			result = jsonParser.parse((String) object);
 		} else {
 			result = gson.toJsonTree(object);
@@ -207,7 +209,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 
 		try {
 			String approvedJsonStr = readFile(approvedFile);
-			JsonParser jsonParser = new JsonParser();
+			JsonParser jsonParser = JsonParserProvider.create();
 			expected = jsonParser.parse(approvedJsonStr);
 		} catch (IOException e) {
 			throw new IllegalStateException(
@@ -277,7 +279,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 				String approvedFileName = approvedFile.getName();
 				String content;
 				if (String.class.isInstance(toApprove)) {
-					JsonParser jsonParser = new JsonParser();
+					JsonParser jsonParser = JsonParserProvider.create();
 					JsonElement toApproveJsonElement = jsonParser.parse(String.class.cast(toApprove));
 					content = removeSetMarker(gson.toJson(toApproveJsonElement));
 				} else {

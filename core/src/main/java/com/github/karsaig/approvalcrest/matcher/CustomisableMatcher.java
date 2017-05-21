@@ -11,6 +11,8 @@ package com.github.karsaig.approvalcrest.matcher;
 
 import org.hamcrest.Matcher;
 
+import com.google.gson.GsonConfiguration;
+
 /**
  * {@link Matcher} implementation where fields and object types can be skipped from the comparison, or matched with
  * custom matchers.

@@ -19,6 +19,7 @@ import static org.junit.Assert.fail;
 import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.ComparisonFailure;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.ComparisonDescription;
@@ -27,6 +28,7 @@ import com.github.karsaig.approvalcrest.ResultComparison;
 /**
  * Unit tests for {@link ResultComparison}
  */
+@Ignore
 public class ResultComparisonTest {
 
 	private static final String NO_REASON = "";

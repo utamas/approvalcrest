@@ -10,6 +10,7 @@
 package com.github.karsaig.approvalcrest;
 
 import org.junit.ComparisonFailure;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.Test.None;
 
@@ -29,6 +30,7 @@ import static org.junit.Assert.fail;
 /**
  * Unit tests which verify circular references are handled automatically.
  */
+@Ignore
 public class MatcherAssertCircularReferenceTest {
 
     @Test(expected = None.class)

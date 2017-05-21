@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -19,6 +20,7 @@ import com.github.karsaig.approvalcrest.model.Bean;
 /**
  * Tests which verifies maps comparison is not affected by the order of the entries.
  */
+@Ignore
 @RunWith(Parameterized.class)
 public class MatcherAssertMapsTest {
 	

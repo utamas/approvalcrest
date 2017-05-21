@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.hamcrest.Matcher;
 import org.junit.ComparisonFailure;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.model.Bean;
@@ -39,6 +40,7 @@ import com.github.karsaig.approvalcrest.model.Bean;
  * MatcherAssert tests checking the diagnostic of the failure cases
  */
 @SuppressWarnings("unchecked")
+@Ignore
 public class MatcherAssertFailureDiagnosticTest {
 
 	@Test

@@ -13,6 +13,7 @@ import static com.github.karsaig.approvalcrest.MatcherAssert.assertThat;
 import static com.github.karsaig.approvalcrest.matcher.Matchers.sameBeanAs;
 import static org.hamcrest.Matchers.not;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.base.Optional;
@@ -20,6 +21,7 @@ import com.google.common.base.Optional;
 /**
  * Tests which verifies {@link Optional} is compared correctly.
  */
+@Ignore
 public class MatcherAssertOptionalTest {
 
 	@Test

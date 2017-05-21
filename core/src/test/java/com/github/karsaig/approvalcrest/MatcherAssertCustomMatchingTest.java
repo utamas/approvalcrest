@@ -20,6 +20,7 @@ import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.hamcrest.core.IsEqual.equalTo;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.MatcherAssert;
@@ -28,6 +29,7 @@ import com.github.karsaig.approvalcrest.model.ParentBean;
 /**
  * Tests which verify the possibility to match beans applying hamcrest matchers on specific fields.
  */
+@Ignore
 public class MatcherAssertCustomMatchingTest {
 
 	@Test

@@ -3,10 +3,12 @@ package com.github.karsaig.approvalcrest;
 import static com.github.karsaig.approvalcrest.MatcherAssert.assertThat;
 import static com.github.karsaig.approvalcrest.matcher.Matchers.sameContentAsApproved;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.Test.None;
 import org.junit.ComparisonFailure;
 
+@Ignore
 public class ContentMatcherTests {
 
 	@Test(expected = None.class)

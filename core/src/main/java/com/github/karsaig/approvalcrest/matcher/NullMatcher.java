@@ -18,9 +18,10 @@ import org.hamcrest.Description;
 /**
  * {@link DiagnosingCustomisableMatcher} implementation which verifies a bean is null.
  */
+// TODO: rename to NullJsonMatcher
 class NullMatcher<T> extends DiagnosingCustomisableMatcher<T> {
-	public NullMatcher(T expected) {
-		super(expected);
+	NullMatcher() {
+		super(null);
 	}
 
     @Override

@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import org.junit.ComparisonFailure;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.MatcherAssert;
@@ -27,6 +28,7 @@ import com.github.karsaig.approvalcrest.model.ParentBean;
 /**
  * Tests for {@link MatcherAssert} which verify that fields that match supplied pattern are ignored.
  */
+@Ignore
 public class MatcherAssertIgnoringPatternTest {
 
 	@Test

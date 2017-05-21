@@ -9,6 +9,7 @@
  */
 package com.github.karsaig.approvalcrest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.model.cyclic.*;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests which verify the {@link com.github.karsaig.approvalcrest.CyclicReferenceDetector} returns the classes which participate in a cyclic reference.
  */
+@Ignore
 public class CyclicReferenceDetectorTest {
 	
     @Test

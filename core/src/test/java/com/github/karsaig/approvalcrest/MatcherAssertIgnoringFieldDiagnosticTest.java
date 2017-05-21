@@ -20,6 +20,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.fail;
 
 import org.junit.ComparisonFailure;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.model.Bean;
@@ -28,6 +29,7 @@ import com.github.karsaig.approvalcrest.model.Bean;
  * MatcherAssert tests checking the diagnostic of failure cases when some fields
  * are ignored
  */
+@Ignore
 public class MatcherAssertIgnoringFieldDiagnosticTest {
 
 	@Test

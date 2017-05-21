@@ -13,6 +13,7 @@ import static com.github.karsaig.approvalcrest.MatcherAssert.assertThat;
 import static com.github.karsaig.approvalcrest.matcher.Matchers.sameBeanAs;
 import static com.github.karsaig.approvalcrest.model.Bean.Builder.bean;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.model.Bean;
@@ -21,6 +22,7 @@ import com.github.karsaig.approvalcrest.model.ChildBean;
 /**
  * MatcherAssert tests checking the happy day scenarios.
  */
+@Ignore
 public class MatcherAssertTest {
 	
 	@Test

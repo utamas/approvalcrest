@@ -3,20 +3,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.karsaig</groupId>
+        <groupId>com.github.karsaig.approvalcrest</groupId>
         <artifactId>approvalcrest</artifactId>
         <version>0.16-SNAPSHOT</version>
     </parent>
 
-    <artifactId>approvalcrest-core</artifactId>
-
-    <scm>
-        <connection>scm:git:git://github.com/karsaig/approvalcrest.git</connection>
-        <developerConnection>scm:git:git@github.com/karsaig/approvalcrest.git</developerConnection>
-        <url>http://github.com/karsaig/approvalcrest</url>
-    </scm>
+    <artifactId>core</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.karsaig.approvalcrest</groupId>
+            <artifactId>spi</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
@@ -24,10 +23,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -40,8 +35,6 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
-            <version>1.3</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

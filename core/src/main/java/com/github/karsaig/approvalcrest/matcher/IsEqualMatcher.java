@@ -16,12 +16,10 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.IsEqual;
 
 /**
- * {@link DiagnosingCustomisableMatcher} which applies the {@link IsEqual} matcher when the object to compare is a String
- * or a primitive type.
+ * {@link DiagnosingCustomisableMatcher} which applies the {@link IsEqual} matcher when the object to compare is a String or a primitive type.
  */
 class IsEqualMatcher<T> extends DiagnosingCustomisableMatcher<T> {
-
-	public IsEqualMatcher(T expected) {
+	IsEqualMatcher(T expected) {
 		super(expected);
 	}
 	

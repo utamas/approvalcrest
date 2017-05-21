@@ -16,6 +16,7 @@ import static com.github.karsaig.approvalcrest.model.ChildBean.Builder.child;
 import static com.github.karsaig.approvalcrest.model.ParentBean.Builder.parent;
 
 import org.junit.ComparisonFailure;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.karsaig.approvalcrest.MatcherAssert;
@@ -26,6 +27,7 @@ import com.github.karsaig.approvalcrest.model.ParentBean;
 /**
  * Tests for {@link MatcherAssert} which verify that fields of specific object types can be ignored from the comparison.
  */
+@Ignore
 public class MatcherAssertIgnoringTypeTest {
 
 	@Test
