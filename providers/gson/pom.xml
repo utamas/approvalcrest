@@ -3,11 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.karsaig.approvalcrest.providers</groupId>
-        <artifactId>approvalcrest-providers</artifactId>
+        <groupId>com.github.karsaig.approvalcrest</groupId>
+        <artifactId>providers</artifactId>
         <version>0.16-SNAPSHOT</version>
     </parent>
 
+    <groupId>com.github.karsaig.approvalcrest.providers</groupId>
     <artifactId>gson</artifactId>
 
     <dependencies>

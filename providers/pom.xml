@@ -9,8 +9,7 @@
     </parent>
     <packaging>pom</packaging>
 
-    <groupId>com.github.karsaig.approvalcrest.providers</groupId>
-    <artifactId>approvalcrest-providers</artifactId>
+    <artifactId>providers</artifactId>
 
     <modules>
         <module>gson</module>

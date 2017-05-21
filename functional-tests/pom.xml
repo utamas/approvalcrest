@@ -13,7 +13,7 @@
     <artifactId>functional-tests</artifactId>
 
     <modules>
-        <module>gson</module>
+        <module>gson-test</module>
     </modules>
 
 </project>
