@@ -88,7 +88,7 @@ public class JsonMatcherBeanWithPrimitivesTest extends AbstractJsonMatcherTest {
     //        Date date = new GregorianCalendar(2016, 4, 27, 13, 30).getTime();
     //        config.addTypeAdapter(Long.class, new DummyStringJsonSerializer());
     //
-    //        assertThat(actual, sameJsonAsApproved().withGsonConfiguration(config));
+    //        assertThat(actual, sameJsonAsApproved().withJsonConfiguration(config));
     //    }
     //
     //    private class DummyStringJsonSerializer implements JsonDeserializer<Long>, JsonSerializer<Long> {

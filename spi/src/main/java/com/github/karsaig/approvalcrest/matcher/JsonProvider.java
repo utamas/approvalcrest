@@ -17,27 +17,27 @@ import java.util.Set;
 import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 
-import com.github.karsaig.json.Gson;
-import com.github.karsaig.json.GsonBuilder;
-import com.github.karsaig.json.GsonConfiguration;
+import com.github.karsaig.json.Json;
+import com.github.karsaig.json.JsonBuilder;
+import com.github.karsaig.json.JsonConfiguration;
 
-public final class GsonProvider {
-    public static @NotNull Gson gson(List<Class<?>> typesToIgnore, List<Matcher<String>> fieldsToIgnore, Set<Class<?>> circularReferenceTypes) {
-        return getDefaultGsonBuilder(typesToIgnore, fieldsToIgnore, circularReferenceTypes).build();
+public final class JsonProvider {
+    public static @NotNull Json json(List<Class<?>> typesToIgnore, List<Matcher<String>> fieldsToIgnore, Set<Class<?>> circularReferenceTypes) {
+        return getDefaultJsonBuilder(typesToIgnore, fieldsToIgnore, circularReferenceTypes).build();
     }
 
-    public static @NotNull Gson gson(List<Class<?>> typesToIgnore, List<Matcher<String>> fieldsToIgnore, Set<Class<?>> circularReferenceTypes, GsonConfiguration additionalConfig) {
-        GsonBuilder gsonBuilder = getDefaultGsonBuilder(typesToIgnore, fieldsToIgnore, circularReferenceTypes);
+    public static @NotNull Json json(List<Class<?>> typesToIgnore, List<Matcher<String>> fieldsToIgnore, Set<Class<?>> circularReferenceTypes, JsonConfiguration additionalConfig) {
+        JsonBuilder jsonBuilder = getDefaultJsonBuilder(typesToIgnore, fieldsToIgnore, circularReferenceTypes);
 
         if (additionalConfig != null) {
-            gsonBuilder.addExtraConfiguration(additionalConfig);
+            jsonBuilder.addExtraConfiguration(additionalConfig);
         }
 
-        return gsonBuilder.build();
+        return jsonBuilder.build();
     }
 
-    private static GsonBuilder getDefaultGsonBuilder(List<Class<?>> typesToIgnore, List<Matcher<String>> fieldsToIgnore, Set<Class<?>> circularReferenceTypes) {
-        GsonBuilder builder = loadBuilder();
+    private static JsonBuilder getDefaultJsonBuilder(List<Class<?>> typesToIgnore, List<Matcher<String>> fieldsToIgnore, Set<Class<?>> circularReferenceTypes) {
+        JsonBuilder builder = loadBuilder();
 
         builder.initialize()
                 .setPrettyPrinting()
@@ -47,11 +47,11 @@ public final class GsonProvider {
         return builder;
     }
 
-    private static GsonBuilder loadBuilder() {
+    private static JsonBuilder loadBuilder() {
         // FIXME: create a more sophisticated loading.
-        Iterator<GsonBuilder> builders = ServiceLoader.load(GsonBuilder.class).iterator();
+        Iterator<JsonBuilder> builders = ServiceLoader.load(JsonBuilder.class).iterator();
 
-        GsonBuilder builder;
+        JsonBuilder builder;
         if (builders.hasNext()) {
             builder = builders.next();
         } else {

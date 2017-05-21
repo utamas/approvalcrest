@@ -1,10 +1,10 @@
 package com.github.karsaig.json.graph;
 
-import com.github.karsaig.json.GsonBuilder;
+import com.github.karsaig.json.JsonBuilder;
 
 public interface GraphAdapterBuilder {
 
-    void addType(Class<?> circularReferenceType);
+    GraphAdapterBuilder addType(Class<?> circularReferenceType);
 
-    void registerOn(GsonBuilder gsonBuilder);
+    GraphAdapterBuilder registerOn(JsonBuilder jsonBuilder);
 }

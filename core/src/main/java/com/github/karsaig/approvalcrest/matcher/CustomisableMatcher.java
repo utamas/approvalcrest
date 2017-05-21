@@ -11,7 +11,7 @@ package com.github.karsaig.approvalcrest.matcher;
 
 import org.hamcrest.Matcher;
 
-import com.github.karsaig.json.GsonConfiguration;
+import com.github.karsaig.json.JsonConfiguration;
 
 /**
  * {@link Matcher} implementation where fields and object types can be skipped from the comparison, or matched with
@@ -51,13 +51,13 @@ public interface CustomisableMatcher<T> extends Matcher<T> {
 	<V> CustomisableMatcher<T> with(String fieldPath, Matcher<V> matcher);
 
     /**
-     * Specify a custom configuration for the Gson, for example, providing additional TypeAdapters.
+     * Specify a custom configuration for the Json, for example, providing additional TypeAdapters.
      *
-     * @param configuration {@link GsonConfiguration} object, containing TypeAdapterFactories, TypeAdapters and
+     * @param configuration {@link JsonConfiguration} object, containing TypeAdapterFactories, TypeAdapters and
      * TypeHierarchyAdapters.
      * @return the instance of the matcher
      */
-    <V> CustomisableMatcher<T> withGsonConfiguration(GsonConfiguration configuration);
+    <V> CustomisableMatcher<T> withJsonConfiguration(JsonConfiguration configuration);
 
     /**
      * Specify the pattern of field names to ignore. Any bean property with a name that

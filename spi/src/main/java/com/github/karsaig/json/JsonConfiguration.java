@@ -1,11 +1,9 @@
 package com.github.karsaig.json;
 
 /**
- * Configuration file for {@link GsonProvider}.
- *
  * @author Andras_Gyuro
  */
-public class GsonConfiguration {
+public class JsonConfiguration {
 
     //    private List<TypeAdapterFactory> typeAdapterFactories = new ArrayList<TypeAdapterFactory>();
     //    private Map<Type, List<Object>> typeAdapters = new HashMap<Type, List<Object>>();

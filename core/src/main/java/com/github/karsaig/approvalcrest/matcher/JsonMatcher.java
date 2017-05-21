@@ -29,8 +29,8 @@ import com.github.karsaig.approvalcrest.ComparisonDescription;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import com.github.karsaig.json.Gson;
-import com.github.karsaig.json.GsonConfiguration;
+import com.github.karsaig.json.Json;
+import com.github.karsaig.json.JsonConfiguration;
 import com.github.karsaig.json.JsonElement;
 import com.github.karsaig.json.JsonParser;
 import com.github.karsaig.json.JsonParserProvider;
@@ -81,12 +81,12 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	private FileStoreMatcherUtils fileStoreMatcherUtils = new FileStoreMatcherUtils(".json");
 
 	private final Set<String> pathsToIgnore = new HashSet<String>();
-	private GsonConfiguration configuration;
+	private JsonConfiguration configuration;
 
 	@Override
 	public void describeTo(final Description description) {
-		Gson gson = GsonProvider.gson(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
-		description.appendText(filterJson(gson, expected));
+		Json json = JsonProvider.json(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
+		description.appendText(filterJson(json, expected));
 		for (String fieldPath : customMatchers.keySet()) {
 			description.appendText("\nand ").appendText(fieldPath).appendText(" ")
 					.appendDescriptionOf(customMatchers.get(fieldPath));
@@ -117,7 +117,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	}
 
 	@Override
-	public JsonMatcher<T> withGsonConfiguration(final GsonConfiguration configuration) {
+	public JsonMatcher<T> withJsonConfiguration(final JsonConfiguration configuration) {
 		this.configuration = configuration;
 		return this;
 	}
@@ -145,20 +145,20 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		boolean matches = false;
 		circularReferenceTypes.addAll(getClassesWithCircularReferences(actual));
 		init();
-		Gson gson = GsonProvider.gson(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
-		createNotApprovedFileIfNotExists(actual, gson);
+		Json json = JsonProvider.json(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
+		createNotApprovedFileIfNotExists(actual, json);
 		initExpectedFromFile();
 
-		if (areCustomMatchersMatching(actual, mismatchDescription, gson)) {
+		if (areCustomMatchersMatching(actual, mismatchDescription, json)) {
 
-			String expectedJson = filterJson(gson, expected);
+			String expectedJson = filterJson(json, expected);
 
-			JsonElement actualJsonElement = getAsJsonElement(gson, actual);
+			JsonElement actualJsonElement = getAsJsonElement(json, actual);
 
 			if (actual == null) {
 				matches = appendMismatchDescription(mismatchDescription, expectedJson, "null", "actual was null");
 			} else {
-				String actualJson = filterJson(gson, actualJsonElement);
+				String actualJson = filterJson(json, actualJsonElement);
 
 				matches = assertEquals(expectedJson, actualJson, mismatchDescription);
 			}
@@ -192,13 +192,13 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		return Hashing.sha1().hashString(fileName, Charsets.UTF_8).toString().substring(0, NUM_OF_HASH_CHARS);
 	}
 
-	private JsonElement getAsJsonElement(final Gson gson, final Object object) {
+	private JsonElement getAsJsonElement(final Json json, final Object object) {
 		JsonElement result;
 		if (object instanceof String) {
 			JsonParser jsonParser = JsonParserProvider.create();
 			result = jsonParser.parse((String) object);
 		} else {
-			result = gson.toJsonTree(object);
+			result = json.toJsonTree(object);
 		}
 		return result;
 
@@ -234,13 +234,13 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		}
 	}
 
-	private String filterJson(final Gson gson, final JsonElement jsonElement) {
+	private String filterJson(final Json json, final JsonElement jsonElement) {
 		Set<String> set = new HashSet<String>();
 		set.addAll(pathsToIgnore);
 
 		JsonElement filteredJson = findPaths(jsonElement, set);
 
-		return removeSetMarker(gson.toJson(filteredJson));
+		return removeSetMarker(json.toJson(filteredJson));
 	}
 
 	private boolean assertEquals(final String expectedJson, final String actualJson,
@@ -271,7 +271,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		return json.replaceAll(MARKER, "");
 	}
 
-	private void createNotApprovedFileIfNotExists(final Object toApprove, final Gson gson) {
+	private void createNotApprovedFileIfNotExists(final Object toApprove, final Json json) {
 		File approvedFile = fileStoreMatcherUtils.getApproved(fileNameWithPath);
 
 		if (!approvedFile.exists()) {
@@ -281,9 +281,9 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 				if (String.class.isInstance(toApprove)) {
 					JsonParser jsonParser = JsonParserProvider.create();
 					JsonElement toApproveJsonElement = jsonParser.parse(String.class.cast(toApprove));
-					content = removeSetMarker(gson.toJson(toApproveJsonElement));
+					content = removeSetMarker(json.toJson(toApproveJsonElement));
 				} else {
-					content = removeSetMarker(gson.toJson(toApprove));
+					content = removeSetMarker(json.toJson(toApprove));
 				}
 				String createdFileName = fileStoreMatcherUtils.createNotApproved(fileNameWithPath, content, testClassName + "." + testMethodName);
 				String message;
@@ -317,7 +317,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	}
 
 	private boolean areCustomMatchersMatching(final Object actual, final Description mismatchDescription,
-			final Gson gson) {
+			final Json json) {
 		boolean result = true;
 		Map<Object, Matcher<?>> customMatching = new HashMap<Object, Matcher<?>>();
 		for (Entry<String, Matcher<?>> entry : customMatchers.entrySet()) {
@@ -331,17 +331,17 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 			if (!matcher.matches(object)) {
 				appendFieldPath(matcher, mismatchDescription);
 				matcher.describeMismatch(object, mismatchDescription);
-				appendFieldJsonSnippet(object, mismatchDescription, gson);
+				appendFieldJsonSnippet(object, mismatchDescription, json);
 				result = false;
 			}
 		}
 		return result;
 	}
 
-	private void appendFieldJsonSnippet(final Object actual, final Description mismatchDescription, final Gson gson) {
-		JsonElement jsonTree = gson.toJsonTree(actual);
+	private void appendFieldJsonSnippet(final Object actual, final Description mismatchDescription, final Json json) {
+		JsonElement jsonTree = json.toJsonTree(actual);
 		if (!jsonTree.isJsonPrimitive() && !jsonTree.isJsonNull()) {
-			mismatchDescription.appendText("\n" + gson.toJson(actual));
+			mismatchDescription.appendText("\n" + json.toJson(actual));
 		}
 	}
 

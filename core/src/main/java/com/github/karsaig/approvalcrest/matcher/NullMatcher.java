@@ -10,7 +10,6 @@
 package com.github.karsaig.approvalcrest.matcher;
 
 import static com.github.karsaig.approvalcrest.CyclicReferenceDetector.getClassesWithCircularReferences;
-import static com.github.karsaig.approvalcrest.matcher.GsonProvider.gson;
 import static org.hamcrest.CoreMatchers.nullValue;
 
 import org.hamcrest.Description;
@@ -28,7 +27,7 @@ class NullMatcher<T> extends DiagnosingCustomisableMatcher<T> {
     protected boolean matches(Object actual, Description mismatchDescription) {
         if (actual != null) {
             circularReferenceTypes.addAll(getClassesWithCircularReferences(actual));
-            String actualJson = gson(typesToIgnore, patternsToIgnore, circularReferenceTypes).toJson(actual);
+            String actualJson = JsonProvider.json(typesToIgnore, patternsToIgnore, circularReferenceTypes).toJson(actual);
             return appendMismatchDescription(mismatchDescription, "null", actualJson, "actual is not null");
         }
         return true;

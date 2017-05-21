@@ -13,7 +13,7 @@ import static com.github.karsaig.approvalcrest.BeanFinder.findBeanAt;
 import static com.github.karsaig.approvalcrest.CyclicReferenceDetector.getClassesWithCircularReferences;
 import static com.github.karsaig.approvalcrest.FieldsIgnorer.MARKER;
 import static com.github.karsaig.approvalcrest.FieldsIgnorer.findPaths;
-import static com.github.karsaig.approvalcrest.matcher.GsonProvider.gson;
+import static com.github.karsaig.approvalcrest.matcher.JsonProvider.json;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +31,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.github.karsaig.approvalcrest.ComparisonDescription;
 
-import com.github.karsaig.json.Gson;
-import com.github.karsaig.json.GsonConfiguration;
+import com.github.karsaig.json.Json;
+import com.github.karsaig.json.JsonConfiguration;
 import com.github.karsaig.json.JsonElement;
 
 /**
@@ -46,7 +46,7 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
     protected final List<Matcher<String>> patternsToIgnore = new ArrayList<Matcher<String>>();
     protected final Set<Class<?>> circularReferenceTypes = new HashSet<Class<?>>();
     protected final T expected;
-    private GsonConfiguration configuration;
+    private JsonConfiguration configuration;
 
     public DiagnosingCustomisableMatcher(T expected) {
         this.expected = expected;
@@ -54,8 +54,8 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
 
     @Override
     public void describeTo(Description description) {
-        Gson gson = gson(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
-        description.appendText(filterJson(gson, expected));
+        Json json = json(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
+        description.appendText(filterJson(json, expected));
         for (String fieldPath : customMatchers.keySet()) {
             description.appendText("\nand ")
                     .appendText(fieldPath).appendText(" ")
@@ -67,19 +67,19 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
     protected boolean matches(Object actual, Description mismatchDescription) {
         circularReferenceTypes.addAll(getClassesWithCircularReferences(actual));
         circularReferenceTypes.addAll(getClassesWithCircularReferences(expected));
-        Gson gson = gson(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
+        Json json = json(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
 
-        if (!areCustomMatchersMatching(actual, mismatchDescription, gson)) {
+        if (!areCustomMatchersMatching(actual, mismatchDescription, json)) {
             return false;
         }
 
-        String expectedJson = filterJson(gson, expected);
+        String expectedJson = filterJson(json, expected);
 
         if (actual == null) {
             return appendMismatchDescription(mismatchDescription, expectedJson, "null", "actual was null");
         }
 
-        String actualJson = filterJson(gson, actual);
+        String actualJson = filterJson(json, actual);
 
         return assertEquals(expectedJson, actualJson, mismatchDescription);
     }
@@ -109,21 +109,21 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
     }
 
     @Override
-    public CustomisableMatcher<T> withGsonConfiguration(final GsonConfiguration configuration) {
+    public CustomisableMatcher<T> withJsonConfiguration(final JsonConfiguration configuration) {
         this.configuration = configuration;
         return this;
     }
 
-    private String filterJson(Gson gson, Object object) {
+    private String filterJson(Json json, Object object) {
         Set<String> set = new HashSet<String>();
         set.addAll(pathsToIgnore);
         set.addAll(customMatchers.keySet());
-        JsonElement filteredJson = findPaths(gson, object, set);
+        JsonElement filteredJson = findPaths(json, object, set);
 
-        return removeSetMarker(gson.toJson(filteredJson));
+        return removeSetMarker(json.toJson(filteredJson));
     }
 
-    private boolean areCustomMatchersMatching(Object actual, Description mismatchDescription, Gson gson) {
+    private boolean areCustomMatchersMatching(Object actual, Description mismatchDescription, Json json) {
         Map<Object, Matcher<?>> customMatching = new HashMap<Object, Matcher<?>>();
         for (Entry<String, Matcher<?>> entry : customMatchers.entrySet()) {
             Object object = actual == null ? null : findBeanAt(entry.getKey(), actual);
@@ -136,7 +136,7 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
             if (!matcher.matches(object)) {
                 appendFieldPath(matcher, mismatchDescription);
                 matcher.describeMismatch(object, mismatchDescription);
-                appendFieldJsonSnippet(object, mismatchDescription, gson);
+                appendFieldJsonSnippet(object, mismatchDescription, json);
                 return false;
             }
         }
@@ -167,10 +167,10 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
         return true;
     }
 
-    private void appendFieldJsonSnippet(Object actual, Description mismatchDescription, Gson gson) {
-        JsonElement jsonTree = gson.toJsonTree(actual);
+    private void appendFieldJsonSnippet(Object actual, Description mismatchDescription, Json json) {
+        JsonElement jsonTree = json.toJsonTree(actual);
         if (!jsonTree.isJsonPrimitive() && !jsonTree.isJsonNull()) {
-            mismatchDescription.appendText("\n" + gson.toJson(actual));
+            mismatchDescription.appendText("\n" + json.toJson(actual));
         }
     }
 

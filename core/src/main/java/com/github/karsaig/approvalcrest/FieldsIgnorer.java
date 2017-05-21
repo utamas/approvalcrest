@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.github.karsaig.json.Gson;
+import com.github.karsaig.json.Json;
 import com.github.karsaig.json.JsonArray;
 import com.github.karsaig.json.JsonArrayProvider;
 import com.github.karsaig.json.JsonElement;
@@ -37,9 +37,9 @@ import com.github.karsaig.json.JsonParserProvider;
 public class FieldsIgnorer {
     public static final String MARKER = "!_TO_BE_SORTED_!";
 
-    public static JsonElement findPaths(Gson gson, Object object, Set<String> pathsToFind) {
+    public static JsonElement findPaths(Json json, Object object, Set<String> pathsToFind) {
         JsonParser jsonParser = JsonParserProvider.create();
-        JsonElement jsonElement = jsonParser.parse(gson.toJson(object));
+        JsonElement jsonElement = jsonParser.parse(json.toJson(object));
 
         JsonElement filteredJson = findPaths(jsonElement, pathsToFind);
         if (object != null && (Set.class.isAssignableFrom(object.getClass()) || Map.class.isAssignableFrom(object.getClass()))) {

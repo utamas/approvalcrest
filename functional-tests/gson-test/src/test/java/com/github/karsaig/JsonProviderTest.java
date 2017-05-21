@@ -10,11 +10,11 @@ import java.util.Set;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import com.github.karsaig.approvalcrest.matcher.GsonProvider;
+import com.github.karsaig.approvalcrest.matcher.JsonProvider;
 
-import com.github.karsaig.json.Gson;
+import com.github.karsaig.json.Json;
 
-public class GsonProviderTest {
+public class JsonProviderTest {
     @Test
     public void shouldWhen() {
         // GIVEN
@@ -23,9 +23,9 @@ public class GsonProviderTest {
         Set<Class<?>> circularReferenceTypes = Collections.emptySet();
 
         // WHEN
-        Gson actualGson = GsonProvider.gson(typesToIgnore, fieldsToIgnore, circularReferenceTypes);
+        Json actualJson = JsonProvider.json(typesToIgnore, fieldsToIgnore, circularReferenceTypes);
 
         // THEN
-        assertNotNull(actualGson);
+        assertNotNull(actualJson);
     }
 }

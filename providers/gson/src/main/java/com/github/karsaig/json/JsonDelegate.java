@@ -1,8 +1,6 @@
-package com.google.gson;
+package com.github.karsaig.json;
 
-import com.github.karsaig.json.JsonElement;
-
-public class GsonDelegate implements com.github.karsaig.json.Gson {
+public class JsonDelegate implements Json {
     @Override
     public String toJson(Object src) {
         return null;
