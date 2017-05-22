@@ -33,7 +33,8 @@ import com.github.karsaig.json.Json;
 import com.github.karsaig.json.JsonConfiguration;
 import com.github.karsaig.json.JsonElement;
 import com.github.karsaig.json.JsonParser;
-import com.github.karsaig.json.JsonParserProvider;
+import com.github.karsaig.json.JsonParserFactory;
+import com.github.karsaig.json.JsonProvider;
 
 /**
  * <p>
@@ -195,7 +196,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	private JsonElement getAsJsonElement(final Json json, final Object object) {
 		JsonElement result;
 		if (object instanceof String) {
-			JsonParser jsonParser = JsonParserProvider.create();
+			JsonParser jsonParser = JsonParserFactory.jsonParser();
 			result = jsonParser.parse((String) object);
 		} else {
 			result = json.toJsonTree(object);
@@ -209,7 +210,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 
 		try {
 			String approvedJsonStr = readFile(approvedFile);
-			JsonParser jsonParser = JsonParserProvider.create();
+			JsonParser jsonParser = JsonParserFactory.jsonParser();
 			expected = jsonParser.parse(approvedJsonStr);
 		} catch (IOException e) {
 			throw new IllegalStateException(
@@ -279,7 +280,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 				String approvedFileName = approvedFile.getName();
 				String content;
 				if (String.class.isInstance(toApprove)) {
-					JsonParser jsonParser = JsonParserProvider.create();
+					JsonParser jsonParser = JsonParserFactory.jsonParser();
 					JsonElement toApproveJsonElement = jsonParser.parse(String.class.cast(toApprove));
 					content = removeSetMarker(json.toJson(toApproveJsonElement));
 				} else {

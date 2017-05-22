@@ -16,6 +16,10 @@
             <groupId>com.github.karsaig.approvalcrest</groupId>
             <artifactId>spi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.karsaig.approvalcrest</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.google.code.gson</groupId>

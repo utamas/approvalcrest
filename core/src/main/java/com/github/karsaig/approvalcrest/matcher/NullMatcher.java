@@ -14,6 +14,8 @@ import static org.hamcrest.CoreMatchers.nullValue;
 
 import org.hamcrest.Description;
 
+import com.github.karsaig.json.JsonProvider;
+
 /**
  * {@link DiagnosingCustomisableMatcher} implementation which verifies a bean is null.
  */

@@ -1,5 +1,7 @@
 package com.github.karsaig.json;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface JsonParser {
-    JsonElement parse(String json);
+    @NotNull JsonElement parse(@NotNull String json);
 }

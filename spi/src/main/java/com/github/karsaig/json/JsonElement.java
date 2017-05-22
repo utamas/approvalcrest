@@ -1,13 +1,15 @@
 package com.github.karsaig.json;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface JsonElement {
     boolean isJsonArray();
 
-    JsonArray getAsJsonArray();
+    @NotNull JsonArray getAsJsonArray();
 
     boolean isJsonNull();
 
-    JsonObject getAsJsonObject();
+    @NotNull JsonObject getAsJsonObject();
 
     boolean isJsonObject();
 

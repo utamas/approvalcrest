@@ -10,7 +10,7 @@ import java.util.Set;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import com.github.karsaig.approvalcrest.matcher.JsonProvider;
+import com.github.karsaig.json.JsonProvider;
 
 import com.github.karsaig.json.Json;
 

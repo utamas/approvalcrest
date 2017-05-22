@@ -13,7 +13,7 @@ import static com.github.karsaig.approvalcrest.BeanFinder.findBeanAt;
 import static com.github.karsaig.approvalcrest.CyclicReferenceDetector.getClassesWithCircularReferences;
 import static com.github.karsaig.approvalcrest.FieldsIgnorer.MARKER;
 import static com.github.karsaig.approvalcrest.FieldsIgnorer.findPaths;
-import static com.github.karsaig.approvalcrest.matcher.JsonProvider.json;
+import static com.github.karsaig.json.JsonProvider.json;
 
 import java.util.ArrayList;
 import java.util.HashMap;

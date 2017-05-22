@@ -1,10 +1,12 @@
 package com.github.karsaig.json;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Very limited Json functionality that we need.
  */
 public interface Json {
-    String toJson(Object src);
+    @NotNull String toJson(@NotNull Object src);
 
-    JsonElement toJsonTree(Object actual);
+    @NotNull JsonElement toJsonTree(@NotNull Object actual);
 }

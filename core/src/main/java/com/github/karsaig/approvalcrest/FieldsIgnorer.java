@@ -9,6 +9,7 @@
  */
 package com.github.karsaig.approvalcrest;
 
+import static com.github.karsaig.json.JsonFactoryProvider.jsonFactory;
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 
@@ -22,14 +23,14 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.github.karsaig.json.Json;
 import com.github.karsaig.json.JsonArray;
-import com.github.karsaig.json.JsonArrayProvider;
 import com.github.karsaig.json.JsonElement;
 import com.github.karsaig.json.JsonParser;
-import com.github.karsaig.json.JsonParserProvider;
+import com.github.karsaig.json.JsonParserFactory;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Responsible for traversing the Json tree and ignore the specified set of field paths.
@@ -38,7 +39,7 @@ public class FieldsIgnorer {
     public static final String MARKER = "!_TO_BE_SORTED_!";
 
     public static JsonElement findPaths(Json json, Object object, Set<String> pathsToFind) {
-        JsonParser jsonParser = JsonParserProvider.create();
+        JsonParser jsonParser = JsonParserFactory.jsonParser();
         JsonElement jsonElement = jsonParser.parse(json.toJson(object));
 
         JsonElement filteredJson = findPaths(jsonElement, pathsToFind);
@@ -112,7 +113,7 @@ public class FieldsIgnorer {
             }
         });
         orderedSet.addAll(Lists.newArrayList(jsonElement.getAsJsonArray().iterator()));
-        JsonArray jsonArray = JsonArrayProvider.create();
+        JsonArray jsonArray = jsonFactory().createJsonArray();
         for (JsonElement element : orderedSet) {
             jsonArray.add(element);
         }

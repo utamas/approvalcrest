@@ -2,8 +2,10 @@ package com.github.karsaig.json;
 
 import java.util.Iterator;
 
-public interface JsonArray extends JsonElement {
-    Iterator<JsonElement> iterator();
+import org.jetbrains.annotations.NotNull;
 
-    void add(JsonElement element);
+public interface JsonArray extends JsonElement {
+    @NotNull Iterator<JsonElement> iterator();
+
+    void add(@NotNull JsonElement element);
 }

@@ -9,17 +9,15 @@ import org.jetbrains.annotations.NotNull;
 public interface JsonBuilder {
     @NotNull JsonBuilder initialize();
 
-    @NotNull JsonBuilder registerTypesToIgnore(List<Class<?>> typesToIgnore);
+    @NotNull JsonBuilder registerTypesToIgnore(@NotNull List<Class<?>> typesToIgnore);
 
-    @NotNull JsonBuilder registerFieldsToIgnore(List<Matcher<String>> fieldsToIgnore);
+    @NotNull JsonBuilder registerFieldsToIgnore(@NotNull List<Matcher<String>> fieldsToIgnore);
 
-    @NotNull JsonBuilder registerCircularReferenceTypes(Set<Class<?>> circularReferenceTypes);
+    @NotNull JsonBuilder registerCircularReferenceTypes(@NotNull Set<Class<?>> circularReferenceTypes);
 
     @NotNull JsonBuilder setPrettyPrinting();
 
-    @NotNull JsonBuilder addExtraConfiguration(JsonConfiguration additionalConfig);
-
-    @NotNull <T> JsonBuilder registerTypeHierarchyAdapter(Class<T> setClass, JsonSerializer<Set> jsonSerializer);
+    @NotNull JsonBuilder addExtraConfiguration(@NotNull JsonConfiguration additionalConfig);
 
     @NotNull Json build();
 }

@@ -1,9 +1,12 @@
 package com.github.karsaig.json;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 public interface JsonObject extends JsonElement {
-    JsonElement get(String field);
+    @Nullable JsonElement get(@NotNull String field);
 
-    void add(String s, JsonElement child);
+    void add(@NotNull String s, @NotNull JsonElement child);
 
-    void remove(String lastSegmentOf);
+    void remove(@NotNull String lastSegmentOf);
 }
