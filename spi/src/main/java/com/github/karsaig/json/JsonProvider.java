@@ -17,11 +17,6 @@ import java.util.Set;
 import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 
-import com.github.karsaig.ServiceLoaders;
-import com.github.karsaig.json.Json;
-import com.github.karsaig.json.JsonBuilder;
-import com.github.karsaig.json.JsonConfiguration;
-
 public final class JsonProvider {
     public static @NotNull Json json(List<Class<?>> typesToIgnore, List<Matcher<String>> fieldsToIgnore, Set<Class<?>> circularReferenceTypes) {
         return getDefaultJsonBuilder(typesToIgnore, fieldsToIgnore, circularReferenceTypes).build();

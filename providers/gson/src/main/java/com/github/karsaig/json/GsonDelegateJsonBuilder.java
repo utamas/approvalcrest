@@ -103,6 +103,17 @@ public class GsonDelegateJsonBuilder implements JsonBuilder {
             });
         }
 
+        if (additionalConfig != null) {
+            Map<Type, List<Object>> typeAdapterMap = additionalConfig.getTypeAdapters();
+            for (Type type : typeAdapterMap.keySet()) {
+                if (typeAdapterMap.get(type) != null) {
+                    for (Object o : typeAdapterMap.get(type)) {
+                        delegate.registerTypeAdapter(type, o);
+                    }
+                }
+            }
+        }
+
         return new GsonDelegateJson(delegate.create());
     }
 

@@ -2,7 +2,10 @@ package com.github.karsaig.approvalcrest;
 
 import static com.github.karsaig.approvalcrest.MatcherAssert.assertThat;
 import static com.github.karsaig.approvalcrest.matcher.Matchers.sameJsonAsApproved;
-import static org.junit.Assert.fail;
+
+import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -12,6 +15,11 @@ import org.junit.Test;
 import org.junit.Test.None;
 
 import com.github.karsaig.approvalcrest.model.BeanWithPrimitives;
+import com.github.karsaig.json.GsonDelegateJsonConfiguration;
+import com.github.karsaig.json.JsonConfiguration;
+
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializer;
 
 /**
  * Unit tests which verify the basic usage of the
@@ -81,35 +89,34 @@ public class JsonMatcherBeanWithPrimitivesTest extends AbstractJsonMatcherTest {
         assertThat(model, sameJsonAsApproved());
     }
 
-        @Test(expected = None.class)
-        public void shouldNotThrowAssertionErrorWhenModelIsSameAsApprovedJsonWithGsonConfiguration() {
-//            GsonConfiguration config = new GsonConfiguration();
-//            Date date = new GregorianCalendar(2016, 4, 27, 13, 30).getTime();
-//            config.addTypeAdapter(Long.class, new DummyStringJsonSerializer());
-//
-//            assertThat(actual, sameJsonAsApproved().withJsonConfiguration(config));
-            fail("GsonConfiguration");
+    @Test(expected = None.class)
+    public void shouldNotThrowAssertionErrorWhenModelIsSameAsApprovedJsonWithGsonConfiguration() {
+        JsonConfiguration config = new GsonDelegateJsonConfiguration();
+        Date date = new GregorianCalendar(2016, 4, 27, 13, 30).getTime();
+        config.addTypeAdapter(Long.class, new DummyStringJsonSerializer());
+
+        assertThat(actual, sameJsonAsApproved().withJsonConfiguration(config));
+    }
+
+    private class DummyStringJsonSerializer implements JsonDeserializer<Long>, JsonSerializer<Long> {
+
+        private static final String LONG_SUFFIX = " Long_variable";
+
+        @Override
+        public Long deserialize(final com.google.gson.JsonElement json, final Type typeOfT, final com.google.gson.JsonDeserializationContext context) throws com.google.gson.JsonParseException {
+            Long result = null;
+            if (!json.isJsonNull()) {
+                String asString = json.getAsString();
+                result = Long.parseLong(asString.replace(LONG_SUFFIX, ""));
+            }
+            return result;
         }
 
-//        private class DummyStringJsonSerializer implements JsonDeserializer<Long>, JsonSerializer<Long> {
-//
-//            private static final String LONG_SUFFIX = " Long_variable";
-//
-//            @Override
-//            public Long deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
-//                Long result = null;
-//                if (!json.isJsonNull()) {
-//                    String asString = json.getAsString();
-//                    result = Long.parseLong(asString.replace(LONG_SUFFIX, ""));
-//                }
-//                return result;
-//            }
-//
-//            @Override
-//            public JsonElement serialize(final Long src, final Type typeOfSrc, final JsonSerializationContext context) {
-//                return new JsonPrimitive(src + LONG_SUFFIX);
-//            }
-//
-//        }
+        @Override
+        public com.google.gson.JsonElement serialize(final Long src, final Type typeOfSrc, final com.google.gson.JsonSerializationContext context) {
+            return new com.google.gson.JsonPrimitive(src + LONG_SUFFIX);
+        }
+
+    }
 
 }
