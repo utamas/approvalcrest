@@ -14,4 +14,12 @@ public interface JsonElement {
     boolean isJsonObject();
 
     boolean isJsonPrimitive();
+
+    /**
+     * <pre>
+     * You must implement this. Advised to use output of delegate.
+     * <b>Warning</b>: not implementing this method might cause non deterministic behaviour.
+     * </pre>
+     */
+    @NotNull String toString();
 }

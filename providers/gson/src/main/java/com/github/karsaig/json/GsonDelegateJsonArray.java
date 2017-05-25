@@ -36,4 +36,9 @@ public class GsonDelegateJsonArray extends GsonDelegateJsonElement implements Js
     public void add(@NotNull JsonElement element) {
         getDelegateAs(com.google.gson.JsonArray.class).add(GsonDelegateJsonElement.class.cast(element).delegate);
     }
+
+    @Override
+    public @NotNull String toString() {
+        return super.toString();
+    }
 }

@@ -39,6 +39,11 @@ public class GsonDelegateJsonElement implements JsonElement {
         return new GsonDelegateJsonObject(delegate.getAsJsonObject());
     }
 
+    @Override
+    public @NotNull String toString() {
+        return delegate.toString();
+    }
+
     <T extends com.google.gson.JsonElement> T getDelegateAs(Class<T> type) {
         return type.cast(delegate);
     }

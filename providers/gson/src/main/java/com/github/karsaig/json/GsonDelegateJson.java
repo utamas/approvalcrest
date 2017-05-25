@@ -1,6 +1,7 @@
 package com.github.karsaig.json;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.Gson;
 
@@ -12,12 +13,16 @@ public class GsonDelegateJson implements Json {
     }
 
     @Override
-    public @NotNull String toJson(@NotNull Object src) {
-        return gson.toJson(src);
+    public @NotNull String toJson(@Nullable Object src) {
+        return gson.toJson(unwrapIfPossible(src));
     }
 
     @Override
-    public @NotNull JsonElement toJsonTree(@NotNull Object actual) {
-        return new GsonDelegateJsonElement(gson.toJsonTree(actual));
+    public @NotNull JsonElement toJsonTree(@Nullable Object actual) {
+        return new GsonDelegateJsonElement(gson.toJsonTree(unwrapIfPossible(actual)));
+    }
+
+    @Nullable private Object unwrapIfPossible(@Nullable Object src) {
+        return GsonDelegateJsonElement.class.isInstance(src) ? GsonDelegateJsonElement.class.cast(src).delegate : src;
     }
 }

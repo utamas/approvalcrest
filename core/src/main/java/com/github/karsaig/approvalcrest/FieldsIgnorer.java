@@ -106,6 +106,15 @@ public class FieldsIgnorer {
     }
 
     private static JsonElement sortArray(JsonElement jsonElement) {
+        TreeSet<JsonElement> orderedSet = sortIt(jsonElement);
+        JsonArray jsonArray = jsonFactory().createJsonArray();
+        for (JsonElement element : orderedSet) {
+            jsonArray.add(element);
+        }
+        return jsonArray;
+    }
+
+    private static TreeSet<JsonElement> sortIt(JsonElement jsonElement) {
         TreeSet<JsonElement> orderedSet = Sets.newTreeSet(new Comparator<JsonElement>() {
             @Override
             public int compare(JsonElement o1, JsonElement o2) {
@@ -113,11 +122,7 @@ public class FieldsIgnorer {
             }
         });
         orderedSet.addAll(Lists.newArrayList(jsonElement.getAsJsonArray().iterator()));
-        JsonArray jsonArray = jsonFactory().createJsonArray();
-        for (JsonElement element : orderedSet) {
-            jsonArray.add(element);
-        }
-        return jsonArray;
+        return orderedSet;
     }
 
     private static void ignorePath(JsonElement jsonElement, String pathToIgnore) {

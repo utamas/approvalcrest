@@ -18,6 +18,7 @@ import static com.github.karsaig.json.JsonProvider.json;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,7 +31,6 @@ import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.github.karsaig.approvalcrest.ComparisonDescription;
-
 import com.github.karsaig.json.Json;
 import com.github.karsaig.json.JsonConfiguration;
 import com.github.karsaig.json.JsonElement;
@@ -53,17 +53,6 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
     }
 
     @Override
-    public void describeTo(Description description) {
-        Json json = json(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
-        description.appendText(filterJson(json, expected));
-        for (String fieldPath : customMatchers.keySet()) {
-            description.appendText("\nand ")
-                    .appendText(fieldPath).appendText(" ")
-                    .appendDescriptionOf(customMatchers.get(fieldPath));
-        }
-    }
-
-    @Override
     protected boolean matches(Object actual, Description mismatchDescription) {
         circularReferenceTypes.addAll(getClassesWithCircularReferences(actual));
         circularReferenceTypes.addAll(getClassesWithCircularReferences(expected));
@@ -82,6 +71,17 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
         String actualJson = filterJson(json, actual);
 
         return assertEquals(expectedJson, actualJson, mismatchDescription);
+    }
+
+    @Override
+    public void describeTo(Description description) {
+        Json json = json(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
+        description.appendText(filterJson(json, expected));
+        for (String fieldPath : customMatchers.keySet()) {
+            description.appendText("\nand ")
+                    .appendText(fieldPath).appendText(" ")
+                    .appendDescriptionOf(customMatchers.get(fieldPath));
+        }
     }
 
     @Override
@@ -115,10 +115,10 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
     }
 
     private String filterJson(Json json, Object object) {
-        Set<String> set = new HashSet<String>();
-        set.addAll(pathsToIgnore);
-        set.addAll(customMatchers.keySet());
-        JsonElement filteredJson = findPaths(json, object, set);
+        Set<String> pathsToBeFilteredOut = new LinkedHashSet<String>();
+        pathsToBeFilteredOut.addAll(pathsToIgnore);
+        pathsToBeFilteredOut.addAll(customMatchers.keySet());
+        JsonElement filteredJson = findPaths(json, object, pathsToBeFilteredOut);
 
         return removeSetMarker(json.toJson(filteredJson));
     }

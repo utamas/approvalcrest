@@ -18,7 +18,6 @@ public class GsonDelegateJsonObject extends GsonDelegateJsonElement implements J
         return element == null ? null : new GsonDelegateJsonElement(element);
     }
 
-
     @Override
     public void add(@NotNull String property, @NotNull JsonElement child) {
         getDelegateAs(com.google.gson.JsonObject.class).add(property, GsonDelegateJsonElement.class.cast(child).delegate);
@@ -27,5 +26,10 @@ public class GsonDelegateJsonObject extends GsonDelegateJsonElement implements J
     @Override
     public void remove(@NotNull String property) {
         getDelegateAs(com.google.gson.JsonObject.class).remove(property);
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return super.toString();
     }
 }
