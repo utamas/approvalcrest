@@ -14,7 +14,7 @@
 
     <packaging>pom</packaging>
 
-    <name>Approvalcrest</name>
+    <name>Approvalcrest-parent</name>
     <description>Library that extends the functionality of hamcrest</description>
 
     <url>http://github.com/karsaig/approvalcrest</url>

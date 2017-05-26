@@ -4,11 +4,12 @@
 
     <parent>
         <groupId>com.github.karsaig.approvalcrest.providers.test</groupId>
-        <artifactId>functional-tests</artifactId>
+        <artifactId>functional-test-gson</artifactId>
         <version>0.16-SNAPSHOT</version>
     </parent>
 
-    <artifactId>gson-test</artifactId>
+    <artifactId>2.8.0-test</artifactId>
+    <name>Approvalcrest-functional-test-gson-2.8.0</name>
 
     <dependencies>
         <dependency>
@@ -17,8 +18,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.karsaig.approvalcrest.providers</groupId>
-            <artifactId>gson-2.8.0</artifactId>
+            <groupId>com.github.karsaig.approvalcrest.providers.gson</groupId>
+            <artifactId>2.8.0</artifactId>
             <version>0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>

@@ -9,12 +9,12 @@
     </parent>
     <packaging>pom</packaging>
 
-    <groupId>com.github.karsaig.approvalcrest.providers.test</groupId>
-    <artifactId>functional-tests</artifactId>
-    <name>Approvalcrest-functional-test-parent</name>
+    <groupId>com.github.karsaig.approvalcrest.providers</groupId>
+    <artifactId>gson</artifactId>
+    <name>Approvalcrest-providers-gson-parent</name>
 
     <modules>
-        <module>functional-test-gson</module>
+        <module>2.8.0</module>
     </modules>
 
 </project>

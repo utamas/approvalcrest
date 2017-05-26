@@ -9,6 +9,7 @@
     </parent>
 
     <artifactId>spi</artifactId>
+    <name>Approvalcrest-spi</name>
 
     <dependencies>
         <dependency>

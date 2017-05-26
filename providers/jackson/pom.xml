@@ -4,17 +4,18 @@
 
     <parent>
         <groupId>com.github.karsaig.approvalcrest</groupId>
-        <artifactId>approvalcrest</artifactId>
+        <artifactId>providers</artifactId>
         <version>0.16-SNAPSHOT</version>
     </parent>
+
     <packaging>pom</packaging>
 
-    <groupId>com.github.karsaig.approvalcrest.providers.test</groupId>
-    <artifactId>functional-tests</artifactId>
-    <name>Approvalcrest-functional-test-parent</name>
+    <groupId>com.github.karsaig.approvalcrest.providers</groupId>
+    <artifactId>jackson</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <name>Approvalcrest-providers-jackson-parent</name>
 
     <modules>
-        <module>functional-test-gson</module>
+        <module>2.6.3</module>
     </modules>
-
 </project>

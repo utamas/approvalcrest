@@ -10,10 +10,11 @@
     <packaging>pom</packaging>
 
     <artifactId>providers</artifactId>
+    <name>Approvalcrest-providers-parent</name>
 
     <modules>
-        <module>gson-2.8.0</module>
-        <module>jackson-2.6.3</module>
+        <module>gson</module>
+        <module>jackson</module>
     </modules>
 
 </project>
