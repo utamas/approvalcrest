@@ -18,7 +18,8 @@
         </dependency>
         <dependency>
             <groupId>com.github.karsaig.approvalcrest.providers</groupId>
-            <artifactId>gson</artifactId>
+            <artifactId>gson-2.8.0</artifactId>
+            <version>0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
@@ -35,6 +36,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

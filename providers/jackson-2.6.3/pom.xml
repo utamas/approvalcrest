@@ -9,7 +9,8 @@
     </parent>
 
     <groupId>com.github.karsaig.approvalcrest.providers</groupId>
-    <artifactId>gson</artifactId>
+    <artifactId>jackson-2.6.3</artifactId>
+    <version>0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -22,9 +23,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.6.3</version>
         </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

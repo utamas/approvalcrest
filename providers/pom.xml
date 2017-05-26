@@ -12,7 +12,8 @@
     <artifactId>providers</artifactId>
 
     <modules>
-        <module>gson</module>
+        <module>gson-2.8.0</module>
+        <module>jackson-2.6.3</module>
     </modules>
 
 </project>
