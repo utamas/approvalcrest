@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 public interface JsonObject extends JsonElement {
     @Nullable JsonElement get(@NotNull String field);
 
-    void add(@NotNull String s, @NotNull JsonElement child);
+    void add(@NotNull String property, @NotNull JsonElement child);
 
-    void remove(@NotNull String lastSegmentOf);
+    void remove(@NotNull String property);
 }

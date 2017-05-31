@@ -22,7 +22,9 @@ public class GsonDelegateJson implements Json {
         return new GsonDelegateJsonElement(gson.toJsonTree(unwrapIfPossible(actual)));
     }
 
-    @Nullable private Object unwrapIfPossible(@Nullable Object src) {
+    // ========== Helper methods below. ==========
+
+    private @Nullable Object unwrapIfPossible(@Nullable Object src) {
         return GsonDelegateJsonElement.class.isInstance(src) ? GsonDelegateJsonElement.class.cast(src).delegate : src;
     }
 }

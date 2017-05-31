@@ -46,13 +46,4 @@
             <artifactId>hamcrest-core</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>x</directory>
-            </resource>
-        </resources>
-    </build>
-
 </project>

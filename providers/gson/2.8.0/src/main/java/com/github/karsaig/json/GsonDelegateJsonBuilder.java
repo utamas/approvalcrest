@@ -33,6 +33,7 @@ import com.google.gson.TypeAdapterFactory;
 
 public class GsonDelegateJsonBuilder implements JsonBuilder {
     private GsonBuilder delegate;
+
     private List<Class<?>> typesToIgnore;
     private List<Matcher<String>> fieldsToIgnore;
     private Set<Class<?>> circularReferenceTypes;
