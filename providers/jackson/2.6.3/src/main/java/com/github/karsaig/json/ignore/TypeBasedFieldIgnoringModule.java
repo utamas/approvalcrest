@@ -1,30 +1,11 @@
 package com.github.karsaig.json.ignore;
 
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.core.util.VersionUtil;
-import com.fasterxml.jackson.databind.Module;
+public class TypeBasedFieldIgnoringModule extends AbstractFieldIgnoringModule {
+    private static final String MODULE_NAME = "TypeBasedFieldIgnoringModule";
 
-public class TypeBasedFieldIgnoringModule extends Module {
-    private final Set<Class<?>> typesToIgnore;
-
-    public TypeBasedFieldIgnoringModule(Set<Class<?>> typesToIgnore) {
-        this.typesToIgnore = typesToIgnore;
-    }
-
-    @Override
-    public String getModuleName() {
-        return "ApprovalcrestJson";
-    }
-
-    @Override
-    public Version version() {
-        return VersionUtil.parseVersion("0.1-SNAPSHOT", "com.github.karsaig.approvalcrest.providers.jackson", "2.6.3");
-    }
-
-    @Override
-    public void setupModule(SetupContext context) {
-        context.addBeanSerializerModifier(new TypeBasedFieldIgnoringBeanSerializerModifier(typesToIgnore));
+    public TypeBasedFieldIgnoringModule(Class<?>... typesToIgnore) {
+        super(new TypeBasedFieldIgnoringBeanSerializerModifier(ImmutableSet.copyOf(typesToIgnore)), MODULE_NAME);
     }
 }

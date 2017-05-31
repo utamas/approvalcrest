@@ -10,20 +10,31 @@ import com.github.karsaig.json.ignore.TypeBasedFieldIgnoringModule;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
 
 public class TypeBasedFieldIgnoringModuleTest {
 
     @Test
     public void shouldNotSerializeFieldWhenItsTypeMarkedToBeIgnored() throws JsonProcessingException {
         // GIVEN
-        ObjectMapper mapper = new ObjectMapper().registerModule(new TypeBasedFieldIgnoringModule(ImmutableSet.<Class<?>>of(B.class)));
+        ObjectMapper mapper = new ObjectMapper().registerModule(new TypeBasedFieldIgnoringModule(B.class));
 
         // WHEN
         String json = mapper.writeValueAsString(new A(new B("Lorem", "Impsum"), "baar"));
 
         // THEN
         assertThat(json, is("{\"fooo\":\"baar\"}"));
+    }
+
+    @Test
+    public void shouldNotSerializeFieldsWhenTypesMarkedToBeIgnored() throws JsonProcessingException {
+        // GIVEN
+        ObjectMapper mapper = new ObjectMapper().registerModule(new TypeBasedFieldIgnoringModule(B.class, String.class));
+
+        // WHEN
+        String json = mapper.writeValueAsString(new A(new B("Lorem", "Impsum"), "baar"));
+
+        // THEN
+        assertThat(json, is("{}"));
     }
 
     private class A {

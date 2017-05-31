@@ -88,9 +88,9 @@ public class GsonDelegateJsonBuilder implements JsonBuilder {
         if (!typesToIgnore.isEmpty() || !fieldsToIgnore.isEmpty()) {
             delegate.setExclusionStrategies(new ExclusionStrategy() {
                 @Override
-                public boolean shouldSkipField(FieldAttributes f) {
-                    for (Matcher<String> p : fieldsToIgnore) {
-                        if (p.matches(f.getName())) {
+                public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+                    for (Matcher<String> matcher : fieldsToIgnore) {
+                        if (matcher.matches(fieldAttributes.getName())) {
                             return true;
                         }
                     }
