@@ -9,5 +9,5 @@ import org.jetbrains.annotations.Nullable;
 public interface Json {
     @NotNull String toJson(@Nullable Object src);
 
-    @NotNull JsonElement toJsonTree(@Nullable Object actual);
+    @NotNull JsonElement toJsonTree(@Nullable Object src);
 }

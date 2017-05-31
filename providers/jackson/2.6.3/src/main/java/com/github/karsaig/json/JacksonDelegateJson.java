@@ -23,7 +23,12 @@ public class JacksonDelegateJson implements Json {
     }
 
     @Override
-    public @NotNull JsonElement toJsonTree(@Nullable Object actual) {
-        return null;
+    public @NotNull JsonElement toJsonTree(@Nullable Object src) {
+        return new JacksonDelegateJsonElement(delegate.valueToTree(unwrapIfPossible(src)), delegate);
+    }
+    // ========== Helper methods below. ==========
+
+    private @Nullable Object unwrapIfPossible(@Nullable Object src) {
+        return JacksonDelegateJsonElement.class.isInstance(src) ? JacksonDelegateJsonElement.class.cast(src).delegate : src;
     }
 }

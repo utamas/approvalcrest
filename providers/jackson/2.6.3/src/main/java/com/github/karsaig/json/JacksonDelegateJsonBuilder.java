@@ -8,13 +8,17 @@ import java.util.Set;
 import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 
+import com.github.karsaig.json.ignore.MatcherBasedFieldIgnoringModule;
+import com.github.karsaig.json.ignore.TypeBasedFieldIgnoringModule;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.google.common.collect.ImmutableSet;
 
 public class JacksonDelegateJsonBuilder implements JsonBuilder {
     private ObjectMapper delegate;
 
-    private List<Class<?>> typesToIgnore;
+    private Set<Class<?>> typesToIgnore;
     private List<Matcher<String>> fieldsToIgnore;
     private Set<Class<?>> circularReferenceTypes;
     private JsonConfiguration additionalConfig;
@@ -28,7 +32,7 @@ public class JacksonDelegateJsonBuilder implements JsonBuilder {
 
     @Override
     public @NotNull JsonBuilder registerTypesToIgnore(@NotNull List<Class<?>> typesToIgnore) {
-        this.typesToIgnore = typesToIgnore;
+        this.typesToIgnore = ImmutableSet.copyOf(typesToIgnore);
         return this;
     }
 
@@ -58,7 +62,12 @@ public class JacksonDelegateJsonBuilder implements JsonBuilder {
 
     @Override
     public @NotNull Json build() {
-        // FIXME
+        // FIXME: add circular dependency handling
+
+        delegate.registerModule(new TypeBasedFieldIgnoringModule(typesToIgnore));
+        delegate.registerModule(new MatcherBasedFieldIgnoringModule(fieldsToIgnore));
+
+        // FIXME: add additional config handling
 
         return new JacksonDelegateJson(delegate);
     }

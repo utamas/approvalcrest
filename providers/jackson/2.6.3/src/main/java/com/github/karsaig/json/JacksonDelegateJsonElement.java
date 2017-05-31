@@ -45,13 +45,14 @@ public class JacksonDelegateJsonElement implements JsonElement {
 
     @Override
     public @NotNull JsonObject getAsJsonObject() {
-        if(!isJsonObject()) {
+        if (!isJsonObject()) {
             throw new IllegalStateException("Not a JsonObject");
         }
         return new JacksonDelegateJsonObject(delegate, mapper);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         try {
             return mapper.writeValueAsString(delegate);
         } catch (JsonProcessingException cause) {
@@ -61,7 +62,7 @@ public class JacksonDelegateJsonElement implements JsonElement {
 
     // ========== Helper methods below. ==========
 
-    <T extends  JsonNode> T getDelegateAs(Class<T> type) {
+    <T extends JsonNode> T getDelegateAs(Class<T> type) {
         return type.cast(delegate);
     }
 
