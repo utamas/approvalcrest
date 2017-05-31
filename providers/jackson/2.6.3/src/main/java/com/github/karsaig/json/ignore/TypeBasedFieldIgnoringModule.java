@@ -1,4 +1,4 @@
-package com.github.karsaig;
+package com.github.karsaig.json.ignore;
 
 import java.util.Set;
 
@@ -25,6 +25,6 @@ public class TypeBasedFieldIgnoringModule extends Module {
 
     @Override
     public void setupModule(SetupContext context) {
-        context.addBeanSerializerModifier(new MyBeanSerializerModifier(typesToIgnore));
+        context.addBeanSerializerModifier(new TypeBasedBeanSerializerModifier(typesToIgnore));
     }
 }

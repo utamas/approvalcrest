@@ -1,4 +1,4 @@
-package com.github.karsaig;
+package com.github.karsaig.json.ignore;
 
 import java.util.Iterator;
 import java.util.List;
@@ -9,11 +9,11 @@ import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
-public class MyBeanSerializerModifier extends BeanSerializerModifier {
+public class TypeBasedBeanSerializerModifier extends BeanSerializerModifier {
 
     private final Set<Class<?>> typesToIgnore;
 
-    public MyBeanSerializerModifier(Set<Class<?>> typesToIgnore) {
+    public TypeBasedBeanSerializerModifier(Set<Class<?>> typesToIgnore) {
         this.typesToIgnore = typesToIgnore;
     }
 
@@ -31,7 +31,7 @@ public class MyBeanSerializerModifier extends BeanSerializerModifier {
             }
 
             if (found) {
-                beanProperties.set(i, new MyBeanPropertyWriter(writer));
+                beanProperties.set(i, new FieldIgnoringBeanPropertyWriter(writer));
             }
         }
 

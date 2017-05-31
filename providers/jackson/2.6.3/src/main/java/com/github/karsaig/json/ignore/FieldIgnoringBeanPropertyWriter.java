@@ -1,12 +1,12 @@
-package com.github.karsaig;
+package com.github.karsaig.json.ignore;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 
-public class MyBeanPropertyWriter extends BeanPropertyWriter {
+public class FieldIgnoringBeanPropertyWriter extends BeanPropertyWriter {
 
-    public MyBeanPropertyWriter(BeanPropertyWriter writer) {
+    public FieldIgnoringBeanPropertyWriter(BeanPropertyWriter writer) {
         super(writer);
     }
 
