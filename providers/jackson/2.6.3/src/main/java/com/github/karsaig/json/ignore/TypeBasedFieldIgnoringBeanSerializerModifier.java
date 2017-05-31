@@ -9,11 +9,11 @@ import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
-public class TypeBasedBeanSerializerModifier extends BeanSerializerModifier {
+public class TypeBasedFieldIgnoringBeanSerializerModifier extends BeanSerializerModifier {
 
     private final Set<Class<?>> typesToIgnore;
 
-    public TypeBasedBeanSerializerModifier(Set<Class<?>> typesToIgnore) {
+    public TypeBasedFieldIgnoringBeanSerializerModifier(Set<Class<?>> typesToIgnore) {
         this.typesToIgnore = typesToIgnore;
     }
 

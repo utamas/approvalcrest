@@ -25,6 +25,6 @@ public class TypeBasedFieldIgnoringModule extends Module {
 
     @Override
     public void setupModule(SetupContext context) {
-        context.addBeanSerializerModifier(new TypeBasedBeanSerializerModifier(typesToIgnore));
+        context.addBeanSerializerModifier(new TypeBasedFieldIgnoringBeanSerializerModifier(typesToIgnore));
     }
 }
