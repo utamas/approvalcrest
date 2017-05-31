@@ -8,12 +8,13 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 
 public class MatcherBasedFieldIgnoringModuleTest {
     @Test
     public void shouldNotSerializePropertiesWhenNameIsMatching() throws JsonProcessingException {
         // GIVEN
-        ObjectMapper mapper = new ObjectMapper().registerModule(new MatcherBasedFieldIgnoringModule(endsWith("Bar")));
+        ObjectMapper mapper = new ObjectMapper().registerModule(new MatcherBasedFieldIgnoringModule(ImmutableList.of(endsWith("Bar"))));
 
         // WHEN
         String json = mapper.writeValueAsString(new A(new Foo("foo"), new Bar("bar"), "test", "testBar"));
