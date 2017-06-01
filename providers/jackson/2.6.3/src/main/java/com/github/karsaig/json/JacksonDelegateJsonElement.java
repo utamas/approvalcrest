@@ -1,5 +1,7 @@
 package com.github.karsaig.json;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,7 +13,7 @@ public class JacksonDelegateJsonElement implements JsonElement {
     final JsonNode delegate;
 
     public JacksonDelegateJsonElement(JsonNode delegate, @NotNull ObjectMapper mapper) {
-        this.delegate = delegate;
+        this.delegate = checkNotNull(delegate, "Delegate cannot be null in %s", delegate.getClass().getCanonicalName());
         this.mapper = mapper;
     }
 

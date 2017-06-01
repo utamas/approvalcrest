@@ -11,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import com.github.karsaig.json.ignore.MatcherBasedFieldIgnoringModule;
 import com.github.karsaig.json.ignore.TypeBasedFieldIgnoringModule;
 
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.collect.ImmutableSet;
 
@@ -27,6 +29,8 @@ public class JacksonDelegateJsonBuilder implements JsonBuilder {
     public @NotNull JsonBuilder initialize() {
         delegate = new ObjectMapper();
         delegate.registerModule(new GuavaModule());
+        delegate.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        delegate.enable(Feature.ALLOW_COMMENTS);
         return this;
     }
 

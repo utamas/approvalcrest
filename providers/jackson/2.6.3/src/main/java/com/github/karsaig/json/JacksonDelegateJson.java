@@ -16,7 +16,7 @@ public class JacksonDelegateJson implements Json {
     @Override
     public @NotNull String toJson(@Nullable Object src) {
         try {
-            return delegate.writeValueAsString(src);
+            return delegate.writeValueAsString(unwrapIfPossible(src));
         } catch (JsonProcessingException e) {
             throw new IllegalStateException(e);
         }
