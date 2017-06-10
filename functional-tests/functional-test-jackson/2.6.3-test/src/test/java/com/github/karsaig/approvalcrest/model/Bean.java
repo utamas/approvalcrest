@@ -37,7 +37,7 @@ public class Bean {
 		array = builder.array;
 	}
 
-	public String getField1() {
+	public String getString() {
 		return string;
 	}
 

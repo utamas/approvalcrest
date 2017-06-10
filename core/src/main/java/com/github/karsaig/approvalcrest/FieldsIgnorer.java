@@ -118,6 +118,7 @@ public class FieldsIgnorer {
         TreeSet<JsonElement> orderedSet = Sets.newTreeSet(new Comparator<JsonElement>() {
             @Override
             public int compare(JsonElement o1, JsonElement o2) {
+                // FIXME: this relies on object overwriting toString (not doing so randomizes sort)!
                 return o1.toString().compareTo(o2.toString());
             }
         });

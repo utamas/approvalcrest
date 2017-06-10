@@ -6,7 +6,7 @@ import static org.junit.Assert.assertThat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.junit.Test;
 
-import com.github.karsaig.json.ignore.TypeBasedFieldIgnoringModule;
+import com.github.karsaig.json.module.TypeBasedFieldIgnoringModule;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

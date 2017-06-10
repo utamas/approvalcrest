@@ -8,8 +8,9 @@ import java.util.Set;
 import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 
-import com.github.karsaig.json.ignore.MatcherBasedFieldIgnoringModule;
-import com.github.karsaig.json.ignore.TypeBasedFieldIgnoringModule;
+import com.github.karsaig.json.module.MatcherBasedFieldIgnoringModule;
+import com.github.karsaig.json.module.SetAndMapMarkingModule;
+import com.github.karsaig.json.module.TypeBasedFieldIgnoringModule;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +32,7 @@ public class JacksonDelegateJsonBuilder implements JsonBuilder {
         delegate.registerModule(new GuavaModule());
         delegate.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         delegate.enable(Feature.ALLOW_COMMENTS);
+        delegate.registerModule(new SetAndMapMarkingModule());
         return this;
     }
 

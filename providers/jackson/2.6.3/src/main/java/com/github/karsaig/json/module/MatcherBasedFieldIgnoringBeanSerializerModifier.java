@@ -1,4 +1,4 @@
-package com.github.karsaig.json.ignore;
+package com.github.karsaig.json.module;
 
 import java.util.Iterator;
 import java.util.List;

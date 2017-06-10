@@ -1,4 +1,4 @@
-package com.github.karsaig.json.ignore;
+package com.github.karsaig.json.module;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
