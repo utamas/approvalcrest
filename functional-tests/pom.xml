@@ -14,6 +14,7 @@
     <name>Approvalcrest-functional-test-parent</name>
 
     <modules>
+        <module>functional-test-models</module>
         <module>functional-test-gson</module>
         <module>functional-test-jackson</module>
     </modules>
