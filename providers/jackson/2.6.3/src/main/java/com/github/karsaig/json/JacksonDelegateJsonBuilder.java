@@ -14,6 +14,7 @@ import com.github.karsaig.json.module.SetAndMapMarkingModule;
 import com.github.karsaig.json.module.SetSerializingModule;
 import com.github.karsaig.json.module.TypeBasedFieldIgnoringModule;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -39,6 +40,7 @@ public class JacksonDelegateJsonBuilder implements JsonBuilder {
 
         delegate.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         delegate.enable(Feature.ALLOW_COMMENTS);
+        delegate.setSerializationInclusion(Include.NON_NULL);
         return this;
     }
 
