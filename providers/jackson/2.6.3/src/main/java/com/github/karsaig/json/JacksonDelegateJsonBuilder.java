@@ -14,7 +14,9 @@ import com.github.karsaig.json.module.SetAndMapMarkingModule;
 import com.github.karsaig.json.module.SetSerializingModule;
 import com.github.karsaig.json.module.TypeBasedFieldIgnoringModule;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -31,16 +33,15 @@ public class JacksonDelegateJsonBuilder implements JsonBuilder {
 
     @Override
     public @NotNull JsonBuilder initialize() {
-        delegate = new ObjectMapper();
-
-        delegate.registerModule(new GuavaModule());
-        delegate.registerModule(new MapSerializingModule());
-        delegate.registerModule(new SetSerializingModule());
-        delegate.registerModule(new SetAndMapMarkingModule());
-
-        delegate.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        delegate.enable(Feature.ALLOW_COMMENTS);
-        delegate.setSerializationInclusion(Include.NON_NULL);
+        delegate = new ObjectMapper()
+                .registerModule(new GuavaModule())
+                .registerModule(new MapSerializingModule())
+                .registerModule(new SetSerializingModule())
+                .registerModule(new SetAndMapMarkingModule())
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .enable(Feature.ALLOW_COMMENTS)
+                .setSerializationInclusion(Include.NON_NULL)
+                .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         return this;
     }
 
