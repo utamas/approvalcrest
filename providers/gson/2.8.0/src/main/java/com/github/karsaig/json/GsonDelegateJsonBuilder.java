@@ -1,9 +1,6 @@
 package com.github.karsaig.json;
 
-import static com.google.common.collect.Sets.newTreeSet;
-
 import java.lang.reflect.Type;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,11 +12,11 @@ import com.github.karsaig.json.graph.GraphAdapterBuilder;
 import com.github.karsaig.json.graph.GsonGraphAdapterBuilder;
 import com.github.karsaig.json.gson.MapJsonSerializer;
 import com.github.karsaig.json.gson.SetAndMapMarkingFieldNamingStrategy;
+import com.github.karsaig.json.gson.SetJsonSerializer;
 
 import com.google.common.base.Optional;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -37,9 +34,9 @@ public class GsonDelegateJsonBuilder implements JsonBuilder {
     public @NotNull JsonBuilder initialize() {
         delegate = new GsonBuilder();
         delegate.registerTypeAdapter(Optional.class, new OptionalSerializer());
-        registerSetSerialisation(delegate);
+        delegate.registerTypeHierarchyAdapter(Set.class, new SetJsonSerializer(delegate));
         delegate.registerTypeHierarchyAdapter(Map.class, new MapJsonSerializer(delegate));
-        markSetAndMapFields(delegate);
+        delegate.setFieldNamingStrategy(new SetAndMapMarkingFieldNamingStrategy());
         return this;
     }
 
@@ -120,48 +117,12 @@ public class GsonDelegateJsonBuilder implements JsonBuilder {
         delegate.registerTypeAdapter(key, factory);
     }
 
-    private static void registerSetSerialisation(final GsonBuilder gsonBuilder) {
-        gsonBuilder.registerTypeHierarchyAdapter(Set.class, new JsonSerializer<Set>() {
-            @Override
-            public com.google.gson.JsonElement serialize(Set set, Type type, JsonSerializationContext context) {
-                Gson gson = gsonBuilder.create();
-
-                Set<Object> orderedSet = orderSetByElementsJsonRepresentation(set, gson);
-                return arrayOfObjectsOrderedByTheirJsonRepresentation(gson, orderedSet);
-            }
-        });
-    }
-
-    private static void markSetAndMapFields(final GsonBuilder gsonBuilder) {
-        gsonBuilder.setFieldNamingStrategy(new SetAndMapMarkingFieldNamingStrategy());
-    }
-
     private static void registerCircularReferenceTypes(Set<Class<?>> circularReferenceTypes, JsonBuilder jsonBuilder) {
         GraphAdapterBuilder graphAdapterBuilder = new GsonGraphAdapterBuilder();
         for (Class<?> circularReferenceType : circularReferenceTypes) {
             graphAdapterBuilder.addType(circularReferenceType);
         }
         graphAdapterBuilder.registerOn(jsonBuilder);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Set<Object> orderSetByElementsJsonRepresentation(Set set, final Gson gson) {
-        Set<Object> objects = newTreeSet(new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                return gson.toJson(o1).compareTo(gson.toJson(o2));
-            }
-        });
-        objects.addAll(set);
-        return objects;
-    }
-
-    private static com.google.gson.JsonArray arrayOfObjectsOrderedByTheirJsonRepresentation(Gson gson, Set<Object> objects) {
-        com.google.gson.JsonArray array = new com.google.gson.JsonArray();
-        for (Object object : objects) {
-            array.add(gson.toJsonTree(object));
-        }
-        return array;
     }
 
     private static class OptionalSerializer<T> implements JsonSerializer<Optional<T>> {
