@@ -18,7 +18,8 @@ public class JacksonDelegateJsonObject extends JacksonDelegateJsonElement implem
 
     @Override
     public @Nullable JsonElement get(@NotNull String field) {
-        return new JacksonDelegateJsonElement(getDelegateAs(JsonNode.class).get(field), getMapper());
+        JsonNode element = getDelegateAs(JsonNode.class).get(field);
+        return element == null ? null : new JacksonDelegateJsonElement(element, getMapper());
     }
 
     @Override
