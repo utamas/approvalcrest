@@ -101,24 +101,24 @@ public class MatcherAssertIgnoringFieldTest {
 	
 	@Test
 	public void ignoresFieldsInBeansWhitinList() {
-		ParentBean.Builder expected = parent()
+		ParentBean expected = parent()
 				.addToChildBeanList(child().childString("kiwi"))
-				.addToChildBeanList(child().childString("plum"));
-		ParentBean.Builder actual = parent()
+				.addToChildBeanList(child().childString("plum")).build();
+		ParentBean actual = parent()
 				.addToChildBeanList(child().childString("banana"))
-				.addToChildBeanList(child().childString("grape"));
+				.addToChildBeanList(child().childString("grape")).build();
 		
 		MatcherAssert.assertThat(actual, Matchers.sameBeanAs(expected).ignoring("childBeanList.childString"));
 	}
 	
 	@Test(expected = ComparisonFailure.class)
 	public void failsWhenBeanDoesNotMatchAfterIgnoringFieldsInBeansWhitinList() {
-		ParentBean.Builder expected = parent()
+		ParentBean expected = parent()
 				.addToChildBeanList(child().childString("kiwi").childInteger(2))
-				.addToChildBeanList(child().childString("plum"));
-		ParentBean.Builder actual = parent()
+				.addToChildBeanList(child().childString("plum")).build();
+		ParentBean actual = parent()
 				.addToChildBeanList(child().childString("banana"))
-				.addToChildBeanList(child().childString("grape"));
+				.addToChildBeanList(child().childString("grape")).build();
 		
 		MatcherAssert.assertThat(actual, Matchers.sameBeanAs(expected).ignoring("childBeanList.childString"));
 	}
@@ -337,6 +337,10 @@ public class MatcherAssertIgnoringFieldTest {
 		
 		public MapContainer(Map<Object, Object> map) {
 			this.map = map;
+		}
+
+		public Map<Object, Object> getMap() {
+			return map;
 		}
 	}
 }
