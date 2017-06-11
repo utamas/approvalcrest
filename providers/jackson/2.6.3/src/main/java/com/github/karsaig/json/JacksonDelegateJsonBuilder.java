@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import com.github.karsaig.json.module.MapSerializingModule;
 import com.github.karsaig.json.module.MatcherBasedFieldIgnoringModule;
 import com.github.karsaig.json.module.SetAndMapMarkingModule;
+import com.github.karsaig.json.module.SetSerializingModule;
 import com.github.karsaig.json.module.TypeBasedFieldIgnoringModule;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
@@ -33,6 +34,7 @@ public class JacksonDelegateJsonBuilder implements JsonBuilder {
 
         delegate.registerModule(new GuavaModule());
         delegate.registerModule(new MapSerializingModule());
+        delegate.registerModule(new SetSerializingModule());
         delegate.registerModule(new SetAndMapMarkingModule());
 
         delegate.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
