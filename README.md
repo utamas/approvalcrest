@@ -1,5 +1,7 @@
 Approvalcrest
 ===========
+[![Build Status](https://travis-ci.org/karsaig/approvalcrest.svg?branch=master)](https://travis-ci.org/karsaig/approvalcrest)
+
 
 'Approvalcrest' is a library that extends the functionality of [Shazamcrest](https://github.com/shazam/shazamcrest).
 
