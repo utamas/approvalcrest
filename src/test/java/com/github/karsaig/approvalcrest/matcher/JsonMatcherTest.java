@@ -82,11 +82,11 @@ public class JsonMatcherTest extends AbstractJsonMatcherTest {
 
     private String getNotApprovedCreationMessage() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Not approved file created '");
+        builder.append("Not approved file created: '");
         builder.append(CLASS_HASH);
         builder.append(File.separator);
         builder.append(DUMMY_FILE_NAME);
-        builder.append("', please verify it's contents and rename it to '");
+        builder.append("'; please verify its contents and rename it to '");
         builder.append(DUMMY_APPROVED_FILE_NAME);
         builder.append("'.");
         return builder.toString();
