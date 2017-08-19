@@ -11,6 +11,7 @@ import org.junit.rules.ExpectedException;
 
 import com.github.karsaig.approvalcrest.testdata.Country;
 import com.github.karsaig.approvalcrest.testdata.Person;
+import com.github.karsaig.approvalcrest.testdata.Team;
 import com.github.karsaig.approvalcrest.testdata.TestDataGenerator;
 
 public class IgnorePathTest {
@@ -41,11 +42,20 @@ public class IgnorePathTest {
 	
 	@Test
 	public void assertShouldBeSuccessfulWhenMultiLevelPathWithDifferenceIsIgnored() {
-		Person input = TestDataGenerator.generatePerson(1L);
+		Team input = TestDataGenerator.generateTeam(2L);
 
-		input.getCurrentAddress().setSince(LocalDate.now());
+		input.getLead().getCurrentAddress().setSince(LocalDate.now());
 
-		assertThat(input, sameJsonAsApproved().ignoring("currentAddress.since"));
+		assertThat(input, sameJsonAsApproved().ignoring("lead.currentAddress.since"));
+	}
+	
+	@Test
+	public void assertShouldBeSuccessfulWhenMultiLevelPathInCollectionWithDifferenceIsIgnored() {
+		Team input = TestDataGenerator.generateTeam(2L);
+
+		input.getMembers().get(0).getCurrentAddress().setSince(LocalDate.now());
+
+		assertThat(input, sameJsonAsApproved().ignoring("members.currentAddress.since"));
 	}
 	
 	@Test

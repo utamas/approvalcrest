@@ -49,4 +49,17 @@ public class TestDataGenerator {
         int index = (int) (number % values.length);
         return values[index];
     }
+	
+	public static Team generateTeam(long index){
+		Team result = new Team();
+		result.setLead(generatePerson(11L + index));
+		int numberOfMembers = (int)(index % 8L);
+		List<Person> members = new ArrayList<Person>(numberOfMembers);
+		for(int i=0;i<numberOfMembers;++i){
+			members.add(generatePerson(100L + index + i));
+		}
+		result.setMembers(members);
+		result.setName("TeamName" + index);
+		return result;
+	}
 }

@@ -1,4 +1,4 @@
-/*com.github.karsaig.approvalcrest.matcher.json.ignore.IgnorePathTest.assertShouldBeSuccessfulWhenMultiLevelPathWithDifferenceIsIgnored*/
+/*com.github.karsaig.approvalcrest.matcher.json.ignore.IgnorePathTest.assertShouldBeSuccessfulWhenMultiLevelPathInCollectionWithDifferenceIsIgnored*/
 {
   "name": "TeamName2",
   "lead": {
