@@ -41,6 +41,48 @@ public class IgnorePathTest {
 	}
 	
 	@Test
+	public void assertShouldBeSuccessfulWhenSimplePathWithNullDifferenceIsIgnored() {
+		Person input = TestDataGenerator.generatePerson(1L);
+
+		input.setFirstName(null);
+
+		assertThat(input, sameJsonAsApproved().ignoring("firstName"));
+	}
+	
+	@Test
+	public void assertShouldFailWhenSimplePathWithNullDifferenceIsNotIgnored() {
+		Person input = TestDataGenerator.generatePerson(1L);
+
+		input.setFirstName(null);
+
+		thrown.expect(org.junit.ComparisonFailure.class);
+		thrown.expectMessage("Expected: firstName\n     but none found");
+		
+		assertThat(input, sameJsonAsApproved());
+	}
+	
+	@Test
+	public void assertShouldBeSuccessfulWhenSimplePathWithNullDifferenceInFileIsIgnored() {
+		Person input = TestDataGenerator.generatePerson(1L);
+
+		input.setFirstName("Different first name");
+
+		assertThat(input, sameJsonAsApproved().ignoring("firstName"));
+	}
+	
+	@Test
+	public void assertShouldBeSuccessfulWhenSimplePathWithNullDifferenceInFileIsNotIgnored() {
+		Person input = TestDataGenerator.generatePerson(1L);
+
+		input.setFirstName("Different first name");
+
+		thrown.expect(org.junit.ComparisonFailure.class);
+		thrown.expectMessage("Unexpected: firstName");
+		
+		assertThat(input, sameJsonAsApproved());
+	}
+	
+	@Test
 	public void assertShouldBeSuccessfulWhenMultiLevelPathWithDifferenceIsIgnored() {
 		Team input = TestDataGenerator.generateTeam(2L);
 
@@ -56,6 +98,36 @@ public class IgnorePathTest {
 		input.getMembers().get(0).getCurrentAddress().setSince(LocalDate.now());
 
 		assertThat(input, sameJsonAsApproved().ignoring("members.currentAddress.since"));
+	}
+	
+	@Test
+	public void assertShouldBeSuccessfulWhenMultiLevelPathInCollectionWithNullDifferenceIsIgnored() {
+		Team input = TestDataGenerator.generateTeam(2L);
+
+		input.getMembers().get(0).getCurrentAddress().setSince(null);
+
+		assertThat(input, sameJsonAsApproved().ignoring("members.currentAddress.since"));
+	}
+	
+	@Test
+	public void assertShouldBeSuccessfulWhenMultiLevelPathInCollectionWithNullDifferenceInFileIsIgnored() {
+		Team input = TestDataGenerator.generateTeam(2L);
+
+		input.getMembers().get(0).getCurrentAddress().setSince(LocalDate.now());
+
+		assertThat(input, sameJsonAsApproved().ignoring("members.currentAddress.since"));
+	}
+	
+	@Test
+	public void assertShouldFailfulWhenMultiLevelPathInCollectionWithNullDifferenceInFileIsNotIgnored() {
+		Team input = TestDataGenerator.generateTeam(2L);
+
+		input.getMembers().get(0).getCurrentAddress().setSince(LocalDate.now());
+
+		thrown.expect(org.junit.ComparisonFailure.class);
+		thrown.expectMessage("Unexpected: since");
+		
+		assertThat(input, sameJsonAsApproved());
 	}
 	
 	@Test

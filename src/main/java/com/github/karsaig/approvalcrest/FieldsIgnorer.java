@@ -47,7 +47,7 @@ public class FieldsIgnorer {
 	}
 
 	public static JsonElement findPaths(JsonElement jsonElement, Set<String> pathsToFind) {
-		if (pathsToFind.isEmpty()) {
+		if (jsonElement == null || pathsToFind.isEmpty()) {
 			return jsonElement;
 		}
 
