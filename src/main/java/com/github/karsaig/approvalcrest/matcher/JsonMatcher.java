@@ -61,6 +61,7 @@ import com.google.gson.JsonParser;
 public class JsonMatcher<T> extends DiagnosingMatcher<T> implements CustomisableMatcher<T>, ApprovedFileMatcher<JsonMatcher<T>> {
 
 	private static final int NUM_OF_HASH_CHARS = 6;
+	private static final boolean UPDATE_IN_PLACE = System.getProperty("jsonMatcherUpdateInPlace") != null;
 
 	private String pathName;
 	private String fileName;
@@ -158,14 +159,25 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 			} else {
 				String actualJson = filterJson(gson, actualJsonElement);
 
-				matches = assertEquals(expectedJson, actualJson, mismatchDescription);
+				matches = assertEquals(expectedJson, actualJson, mismatchDescription);  
+				if(!matches) {
+					matches = handleInPlaceOverwrite(actual, gson);
+				}
 			}
 		} else {
-			matches = false;
+			matches = handleInPlaceOverwrite(actual, gson);
 		}
 		return matches;
 	}
 
+	private boolean handleInPlaceOverwrite(Object actual,Gson gson) {
+		if(UPDATE_IN_PLACE) {
+			overwriteApprovedFile(actual, gson);
+			return true;
+		}
+		return false;
+	}
+	
 	private void init() {
 		testMethodName = fileStoreMatcherUtils.getCallerTestMethodName();
 		testClassName = fileStoreMatcherUtils.getCallerTestClassName();
@@ -269,21 +281,13 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		return json.replaceAll(MARKER, "");
 	}
 
-	private void createNotApprovedFileIfNotExists(final Object toApprove, final Gson gson) {
+	private void createNotApprovedFileIfNotExists(Object toApprove, Gson gson) {
 		File approvedFile = fileStoreMatcherUtils.getApproved(fileNameWithPath);
-
 		if (!approvedFile.exists()) {
 			try {
 				String approvedFileName = approvedFile.getName();
-				String content;
-				if (String.class.isInstance(toApprove)) {
-					JsonParser jsonParser = new JsonParser();
-					JsonElement toApproveJsonElement = jsonParser.parse(String.class.cast(toApprove));
-					content = removeSetMarker(gson.toJson(toApproveJsonElement));
-				} else {
-					content = removeSetMarker(gson.toJson(toApprove));
-				}
-				String createdFileName = fileStoreMatcherUtils.createNotApproved(fileNameWithPath, content, testClassName + "." + testMethodName);
+				String content = serializeToJson(toApprove, gson);
+				String createdFileName = fileStoreMatcherUtils.createNotApproved(fileNameWithPath, content, getCommentLine());
 				String message;
 				if (testClassNameHash == null) {
 					message = "Not approved file created: '" + createdFileName
@@ -300,7 +304,40 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 			}
 		}
 	}
-
+	
+	private void overwriteApprovedFile(Object actual, Gson gson) {
+		File approvedFile = fileStoreMatcherUtils.getApproved(fileNameWithPath);
+		if(approvedFile.exists()) {
+			try {
+				String content = serializeToJson(actual, gson);
+				fileStoreMatcherUtils.overwriteApprovedFile(fileNameWithPath, content, getCommentLine());
+			}
+			catch (IOException e) {
+				throw new IllegalStateException(
+						String.format("Exception while overwriting approved file %s", actual.toString()), e);
+			}
+		}
+		else {
+			throw new IllegalStateException("Approved file "+fileNameWithPath+" must exist in order to overwrite it! ");
+		}
+	}
+	
+	private String getCommentLine() {
+		return testClassName + "." + testMethodName;
+	}
+	
+	private String serializeToJson(Object toApprove, Gson gson) {
+		String content;
+		if (String.class.isInstance(toApprove)) {
+			JsonParser jsonParser = new JsonParser();
+			JsonElement toApproveJsonElement = jsonParser.parse(String.class.cast(toApprove));
+			content = removeSetMarker(gson.toJson(toApproveJsonElement));
+		} else {
+			content = removeSetMarker(gson.toJson(toApprove));
+		}
+		return content;
+	}
+	
 	private boolean appendMismatchDescription(final Description mismatchDescription, final String expectedJson,
 			final String actualJson, final String message) {
 		if (mismatchDescription instanceof ComparisonDescription) {

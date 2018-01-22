@@ -2,6 +2,7 @@ package com.github.karsaig.approvalcrest.matcher;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -46,15 +47,31 @@ public class FileStoreMatcherUtils {
 	public String createNotApproved(final String fileNameWithPath, final String jsonObject, final String comment)
 			throws IOException {
 		File file = new File(getFullFileName(fileNameWithPath, false));
-		file.getParentFile().mkdirs();
-		BufferedWriter writer = Files.newWriter(file, Charsets.UTF_8);
-		writer.append("/*" + comment + "*/");
-		writer.append("\n");
-		writer.append(jsonObject);
-		writer.close();
-		return file.getName();
+		return writeToFile(file, jsonObject, comment);
 	}
 
+	public String overwriteApprovedFile(String fileNameWithPath, final String jsonObject, final String comment) throws IOException {
+		File file = new File(getFullFileName(fileNameWithPath, true));
+		return writeToFile(file, jsonObject, comment);
+	}
+	
+	private String writeToFile(File file,String jsonObject, String comment) throws IOException {
+		BufferedWriter writer = null;
+		try {
+			writer = Files.newWriter(file, Charsets.UTF_8);
+			writer.append("/*" + comment + "*/");
+			writer.append("\n");
+			writer.append(jsonObject);
+			writer.close();
+			return file.getName();
+		}
+		finally {
+			if(writer != null) {
+				writer.close();
+			}
+		}
+	}
+	
 	public String readFile(File file) throws IOException {
 		String fileContent = Files.toString(file, Charsets.UTF_8);
 
