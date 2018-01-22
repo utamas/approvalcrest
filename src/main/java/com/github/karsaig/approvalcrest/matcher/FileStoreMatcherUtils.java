@@ -47,6 +47,7 @@ public class FileStoreMatcherUtils {
 	public String createNotApproved(final String fileNameWithPath, final String jsonObject, final String comment)
 			throws IOException {
 		File file = new File(getFullFileName(fileNameWithPath, false));
+		file.getParentFile().mkdirs();
 		return writeToFile(file, jsonObject, comment);
 	}
 

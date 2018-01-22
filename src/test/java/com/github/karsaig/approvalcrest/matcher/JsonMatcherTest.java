@@ -2,8 +2,8 @@ package com.github.karsaig.approvalcrest.matcher;
 
 import static com.github.karsaig.approvalcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.github.karsaig.approvalcrest.AbstractJsonMatcherTest;
 import com.github.karsaig.approvalcrest.model.BeanWithPrimitives;
@@ -25,7 +25,7 @@ import com.github.karsaig.approvalcrest.model.BeanWithPrimitives;
  * @author Andras_Gyuro
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class JsonMatcherTest extends AbstractJsonMatcherTest {
 
     private static final String DUMMY_FILE_NAME = "fileName";
@@ -37,6 +37,7 @@ public class JsonMatcherTest extends AbstractJsonMatcherTest {
     private static final String METHOD_HASH = "f8e392";
     private static final String DUMMY_FILE_NAME_WITH_PATH = DUMMY_TEST_PATH + File.separator + CLASS_HASH + File.separator + METHOD_HASH;
     private static final String DUMMY_COMMENT = DUMMY_CLASS_NAME + "." + DUMMY_METHOD_NAME;
+    
     @Mock
     private FileStoreMatcherUtils utils;
 
