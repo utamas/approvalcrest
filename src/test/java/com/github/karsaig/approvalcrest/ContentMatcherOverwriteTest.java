@@ -5,12 +5,8 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
 
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -21,8 +17,7 @@ import com.github.karsaig.approvalcrest.model.BeanWithPrimitives;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
-public class JsonMatcherOverwriteTest extends AbstractJsonMatcherTest {
-
+public class ContentMatcherOverwriteTest {
 	private static final String OVERWRITE_FLAG_NAME = "jsonMatcherUpdateInPlace";
 
 	@Rule
@@ -40,12 +35,12 @@ public class JsonMatcherOverwriteTest extends AbstractJsonMatcherTest {
 	public void shouldThrowExceptionWhenSystemPropertyIsSetAndApprovedFileDoesNotExist() {
 		// GIVEN
 		enableOverwrite();
-		BeanWithPrimitives input = getBeanWithPrimitives();
+		String input = "Test input data...";
 		expectedException.expect(AssertionError.class);
-		expectedException.expectMessage(
-				"Not approved file created: 'notExistingApprovedFile-not-approved.json'; please verify its contents and rename it to 'notExistingApprovedFile-approved.json'.");
+		expectedException.expectMessage("Not approved file created: 'notExistingApprovedFile-not-approved.content';\n"
+				+ " please verify its contents and rename it to 'notExistingApprovedFile-approved.content'.");
 		// WHEN
-		MatcherAssert.assertThat(input, Matchers.sameJsonAsApproved()
+		MatcherAssert.assertThat(input, Matchers.sameContentAsApproved()
 				.withPathName(testFolder.getRoot().getAbsolutePath()).withFileName("notExistingApprovedFile"));
 		// THEN
 		// Exception thrown
@@ -54,46 +49,45 @@ public class JsonMatcherOverwriteTest extends AbstractJsonMatcherTest {
 	@Test
 	public void shouldOverwriteApprovedFileWhenSystemPropertyIsSetAndApprovedFileExists() throws IOException {
 		// GIVEN
-		File tmp = new File(testFolder.getRoot().getAbsolutePath() + "/overwriteTestInput-approved.json");
+		File tmp = new File(testFolder.getRoot().getAbsolutePath() + "/overwriteTestInput-approved.content");
 		enableOverwrite();
-		BeanWithPrimitives input = getBeanWithPrimitives();
-		Files.copy(new File("src/test/overwriteTestInputToCopy.json"), tmp);
+
+		String input = "Overwritten content...";
+		Files.copy(new File("src/test/overwriteTestInputToCopy.content"), tmp);
 		// WHEN
-		MatcherAssert.assertThat(input, Matchers.sameJsonAsApproved()
+		MatcherAssert.assertThat(input, Matchers.sameContentAsApproved()
 				.withPathName(testFolder.getRoot().getAbsolutePath()).withFileName("overwriteTestInput"));
 		// THEN
-		String expected = "/*com.github.karsaig.approvalcrest.JsonMatcherOverwriteTest.shouldOverwriteApprovedFileWhenSystemPropertyIsSetAndApprovedFileExists*/\n"
-				+ "{\n" + "  \"beanInteger\": 4,\n" + "  \"beanByte\": 2,\n" + "  \"beanChar\": \"c\",\n"
-				+ "  \"beanShort\": 1,\n" + "  \"beanLong\": 6,\n" + "  \"beanFloat\": 3.0,\n"
-				+ "  \"beanDouble\": 5.0,\n" + "  \"beanBoolean\": true\n" + "}";
 		String actual = Files.toString(tmp, Charsets.UTF_8);
+		String expected = "/*com.github.karsaig.approvalcrest.ContentMatcherOverwriteTest.shouldOverwriteApprovedFileWhenSystemPropertyIsSetAndApprovedFileExists*/\nOverwritten content...";
 		assertThat(actual, is(expected));
+
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenApprovedFileDiffersAndFlagIsFalse() throws IOException {
 		// GIVEN
-		File tmp = new File(testFolder.getRoot().getAbsolutePath() + "/overwriteTestInput2-approved.json");
+		File tmp = new File(testFolder.getRoot().getAbsolutePath() + "/overwriteTestInput2-approved.content");
 		disableOverwrite();
-		BeanWithPrimitives input = getBeanWithPrimitives();
-		Files.copy(new File("src/test/overwriteTestInputToCopy.json"), tmp);
+		String input = "Overwritten content...";
+		Files.copy(new File("src/test/overwriteTestInputToCopy.content"), tmp);
 
 		expectedException.expect(AssertionError.class);
 		expectedException
-				.expectMessage("/overwriteTestInput2\n" + "beanByte\n" + "Expected: ChangedValue!!\n" + "     got: 2");
+				.expectMessage("Content does not match! expected:<O[riginal content!]> but was:<O[verwritten content...]>");
 
 		// WHEN
-		MatcherAssert.assertThat(input, Matchers.sameJsonAsApproved()
+		MatcherAssert.assertThat(input, Matchers.sameContentAsApproved()
 				.withPathName(testFolder.getRoot().getAbsolutePath()).withFileName("overwriteTestInput2"));
 		// THEN
 		//Exception thrown
 	}
-
+	
 	private static void enableOverwrite() {
 		System.setProperty(OVERWRITE_FLAG_NAME, "true");
 	}
 
 	private static void disableOverwrite() {
-		System.setProperty(OVERWRITE_FLAG_NAME, "false");
+		System.clearProperty(OVERWRITE_FLAG_NAME);
 	}
 }

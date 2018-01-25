@@ -12,33 +12,39 @@ import org.hamcrest.DiagnosingMatcher;
 import com.github.karsaig.approvalcrest.ComparisonDescription;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import com.google.gson.Gson;
 
 /**
  * <p>
- * Matcher for asserting expected {@link String}s. Searches for an approved file in
- * the same directory as the test file:
+ * Matcher for asserting expected {@link String}s. Searches for an approved file
+ * in the same directory as the test file:
  * <ul>
- * 		<li>If found, the matcher will assert the contents of the file to the actual {@link String}.</li>
- * 		<li>If not found, a non-approved file is created, that must be
- * verified and renamed to "*-approved.content" by the developer. </li>
+ * <li>If found, the matcher will assert the contents of the file to the actual
+ * {@link String}.</li>
+ * <li>If not found, a non-approved file is created, that must be verified and
+ * renamed to "*-approved.content" by the developer.</li>
  * </ul>
- * The files and directories are hashed with SHA-1 algorithm by default to avoid too long file
- * and path names.
- * These are generated in the following way:
+ * The files and directories are hashed with SHA-1 algorithm by default to avoid
+ * too long file and path names. These are generated in the following way:
  * <ul>
- *   <li> the directory name is the first {@value #NUM_OF_HASH_CHARS} characters of the hashed <b>class name</b>. </li>
- *   <li> the file name is the first {@value #NUM_OF_HASH_CHARS} characters of the hashed <b>test method name</b>. </li>
+ * <li>the directory name is the first {@value #NUM_OF_HASH_CHARS} characters of
+ * the hashed <b>class name</b>.</li>
+ * <li>the file name is the first {@value #NUM_OF_HASH_CHARS} characters of the
+ * hashed <b>test method name</b>.</li>
  * </ul>
  *
- * This default behavior can be overridden by using the {@link #withFileName(String)} for
- * custom file name and {@link #withPathName(String)} for custom path.
+ * This default behavior can be overridden by using the
+ * {@link #withFileName(String)} for custom file name and
+ * {@link #withPathName(String)} for custom path.
  * </p>
  * 
- * @param <T> Only {@link String} is supported at the moment.
+ * @param <T>
+ *            Only {@link String} is supported at the moment.
  */
 public class ContentMatcher<T> extends DiagnosingMatcher<T> implements ApprovedFileMatcher<ContentMatcher<T>> {
 
 	private static final int NUM_OF_HASH_CHARS = 6;
+	private static final String UPDATE_IN_PLACE_NAME = "jsonMatcherUpdateInPlace";
 
 	private String pathName;
 	private String fileName;
@@ -69,8 +75,13 @@ public class ContentMatcher<T> extends DiagnosingMatcher<T> implements ApprovedF
 		if (expectedContent.equals(actualString)) {
 			matches = true;
 		} else {
-			matches = appendMismatchDescription(mismatchDescription, expectedContent, actualString,
-					getAssertMessage("Content does not match!"));
+			if ("true".equals(System.getProperty(UPDATE_IN_PLACE_NAME))) {
+				overwriteApprovedFile(actual);
+				matches = true;
+			} else {
+				matches = appendMismatchDescription(mismatchDescription, expectedContent, actualString,
+						getAssertMessage("Content does not match!"));
+			}
 		}
 		return matches;
 	}
@@ -128,7 +139,7 @@ public class ContentMatcher<T> extends DiagnosingMatcher<T> implements ApprovedF
 				}
 				String content = String.class.cast(toApprove);
 				String createdFileName = fileStoreMatcherUtils.createNotApproved(fileNameWithPath, content,
-						testClassName + "." + testMethodName);
+						getCommentLine());
 				String message;
 				if (testClassNameHash == null) {
 					message = "Not approved file created: '" + createdFileName
@@ -144,6 +155,26 @@ public class ContentMatcher<T> extends DiagnosingMatcher<T> implements ApprovedF
 						String.format("Exception while creating not approved file %s", toApprove.toString()), e);
 			}
 		}
+	}
+
+	private void overwriteApprovedFile(Object actual) {
+		File approvedFile = fileStoreMatcherUtils.getApproved(fileNameWithPath);
+		if (approvedFile.exists()) {
+			try {
+				String content = String.class.cast(actual);
+				fileStoreMatcherUtils.overwriteApprovedFile(fileNameWithPath, content, getCommentLine());
+			} catch (IOException e) {
+				throw new IllegalStateException(
+						String.format("Exception while overwriting approved file %s", actual.toString()), e);
+			}
+		} else {
+			throw new IllegalStateException(
+					"Approved file " + fileNameWithPath + " must exist in order to overwrite it! ");
+		}
+	}
+
+	private String getCommentLine() {
+		return testClassName + "." + testMethodName;
 	}
 
 	private void initExpectedFromFile() {

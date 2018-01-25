@@ -61,7 +61,7 @@ import com.google.gson.JsonParser;
 public class JsonMatcher<T> extends DiagnosingMatcher<T> implements CustomisableMatcher<T>, ApprovedFileMatcher<JsonMatcher<T>> {
 
 	private static final int NUM_OF_HASH_CHARS = 6;
-	private static final boolean UPDATE_IN_PLACE = System.getProperty("jsonMatcherUpdateInPlace") != null;
+	private static final String UPDATE_IN_PLACE_NAME = "jsonMatcherUpdateInPlace";
 
 	private String pathName;
 	private String fileName;
@@ -171,7 +171,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	}
 
 	private boolean handleInPlaceOverwrite(Object actual,Gson gson) {
-		if(UPDATE_IN_PLACE) {
+		if("true".equals(System.getProperty(UPDATE_IN_PLACE_NAME))) {
 			overwriteApprovedFile(actual, gson);
 			return true;
 		}
