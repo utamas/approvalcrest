@@ -9,28 +9,31 @@
  */
 package com.github.karsaig.approvalcrest;
 
-import static java.util.Arrays.asList;
-
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static java.util.Arrays.asList;
 
 /**
  * Returns the object corresponding to the path specified
  */
 public class BeanFinder {
 
+	private final static String PATH_REGEX = Pattern.quote(".");
+	
 	public static Object findBeanAt(String fieldPath, Object object) {
 		try {
-			return findBeanAt(asList(fieldPath.split(Pattern.quote("."))), object);
+			return findBeanAt(asList(fieldPath.split(PATH_REGEX)), object);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(fieldPath + " does not exist");
 		}
 	}
 
 	private static Object findBeanAt(List<String> fields, Object object) {
-		for (Field field : object.getClass().getDeclaredFields()) {
+		for (Field field : getEveryField(object.getClass())) {
 			field.setAccessible(true);
 			if (headOf(fields).equals(field.getName())) {
 				try {
@@ -39,14 +42,25 @@ public class BeanFinder {
 					} else {
 						return findBeanAt(fields.subList(1, fields.size()), field.get(object));
 					}
-				} catch (IllegalAccessException e) {}
+				} catch (IllegalAccessException e) {
+				}
 			}
 		}
-		
+
 		throw new IllegalArgumentException();
 	}
 
 	private static String headOf(final Collection<String> paths) {
 		return paths.iterator().next();
+	}
+
+	private static List<Field> getEveryField(Class<?> type) {
+		List<Field> result = new LinkedList<Field>();
+		for (Class<?> clazz = type; clazz != null; clazz = clazz.getSuperclass()) {
+			for (Field currentField : clazz.getDeclaredFields()) {
+				result.add(currentField);
+			}
+		}
+		return result;
 	}
 }
