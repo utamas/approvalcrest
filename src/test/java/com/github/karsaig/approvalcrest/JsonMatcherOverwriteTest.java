@@ -80,7 +80,7 @@ public class JsonMatcherOverwriteTest extends AbstractJsonMatcherTest {
 
 		expectedException.expect(AssertionError.class);
 		expectedException
-				.expectMessage("/overwriteTestInput2\n" + "beanByte\n" + "Expected: ChangedValue!!\n" + "     got: 2");
+				.expectMessage("overwriteTestInput2\n" + "beanByte\n" + "Expected: ChangedValue!!\n" + "     got: 2");
 
 		// WHEN
 		MatcherAssert.assertThat(input, Matchers.sameJsonAsApproved()
