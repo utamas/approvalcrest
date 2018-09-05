@@ -16,6 +16,7 @@ import static com.github.karsaig.approvalcrest.FieldsIgnorer.findPaths;
 import static com.github.karsaig.approvalcrest.matcher.GsonProvider.gson;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +39,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * ignore in the comparison, or fields to be matched with a custom matcher
  */
 class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements CustomisableMatcher<T> {
-	private final Set<String> pathsToIgnore = new HashSet<String>();
+	protected final Set<String> pathsToIgnore = new HashSet<String>();
 	private final Map<String, Matcher<?>> customMatchers = new HashMap<String, Matcher<?>>();
 	protected final List<Class<?>> typesToIgnore = new ArrayList<Class<?>>();
 	protected final List<Matcher<String>> patternsToIgnore = new ArrayList<Matcher<String>>();
@@ -63,8 +64,8 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
 
 	@Override
 	protected boolean matches(Object actual, Description mismatchDescription) {
-        circularReferenceTypes.addAll(getClassesWithCircularReferences(actual));
-        circularReferenceTypes.addAll(getClassesWithCircularReferences(expected));
+        circularReferenceTypes.addAll(getClassesWithCircularReferences(actual,typesToIgnore,patternsToIgnore,pathsToIgnore));
+        circularReferenceTypes.addAll(getClassesWithCircularReferences(expected,typesToIgnore,patternsToIgnore,pathsToIgnore));
         Gson gson = gson(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
 
     		if (!areCustomMatchersMatching(actual, mismatchDescription, gson)) {

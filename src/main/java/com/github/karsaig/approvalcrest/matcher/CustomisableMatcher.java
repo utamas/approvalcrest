@@ -9,6 +9,8 @@
  */
 package com.github.karsaig.approvalcrest.matcher;
 
+import java.util.Comparator;
+
 import org.hamcrest.Matcher;
 
 /**
@@ -67,4 +69,6 @@ public interface CustomisableMatcher<T> extends Matcher<T> {
      * @return the instance of the matcher
      */
     CustomisableMatcher<T> ignoring(Matcher<String> fieldNamePattern);
+    
+
 }

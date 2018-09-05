@@ -142,7 +142,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	@Override
 	protected boolean matches(final Object actual, final Description mismatchDescription) {
 		boolean matches = false;
-		circularReferenceTypes.addAll(getClassesWithCircularReferences(actual));
+		circularReferenceTypes.addAll(getClassesWithCircularReferences(actual,typesToIgnore,patternsToIgnore,pathsToIgnore));
 		init();
 		Gson gson = GsonProvider.gson(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
 		createNotApprovedFileIfNotExists(actual, gson);
