@@ -28,6 +28,16 @@ public interface CustomisableMatcher<T> extends Matcher<T> {
 	 * @return the instance of the matcher
 	 */
 	CustomisableMatcher<T> ignoring(String fieldPath);
+	
+	/**
+	 * Specify the path of the field to be skipped from the matcher comparison.
+	 * Example:
+	 * <pre>sameBeanAs(expected).ignoring("beanField.subBeanField")</pre>
+	 * 
+	 * @param fieldPaths the paths of fields to be skipped from the comparison.
+	 * @return the instance of the matcher
+	 */
+	CustomisableMatcher<T> ignoring(String... fieldPaths);
 
 	/**
 	 * Specify the object type of the fields to be skipped from the matcher comparison.

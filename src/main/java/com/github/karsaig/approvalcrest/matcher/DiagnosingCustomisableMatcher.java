@@ -185,4 +185,12 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
 	private String removeSetMarker(String json) {
 		return json.replaceAll(MARKER, "");
 	}
+
+	@Override
+	public CustomisableMatcher<T> ignoring(String... fieldPaths) {
+		for(String fieldPath : fieldPaths){
+			pathsToIgnore.add(fieldPath);
+		}
+		return this;
+	}
 }

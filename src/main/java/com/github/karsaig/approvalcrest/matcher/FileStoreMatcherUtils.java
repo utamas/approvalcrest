@@ -48,7 +48,11 @@ public class FileStoreMatcherUtils {
 	public String createNotApproved(final String fileNameWithPath, final String jsonObject, final String comment)
 			throws IOException {
 		File file = new File(getFullFileName(fileNameWithPath, false));
-		file.getParentFile().mkdirs();
+		File parent = file.getParentFile();
+		parent.mkdirs();
+		parent.setExecutable(true, false);
+		parent.setReadable(true, false);
+		parent.setWritable(true, false);
 		return writeToFile(file, jsonObject, comment);
 	}
 
@@ -65,6 +69,8 @@ public class FileStoreMatcherUtils {
 			writer.append("\n");
 			writer.append(jsonObject);
 			writer.close();
+			file.setReadable(true, false);
+			file.setWritable(true, false);
 			return file.getName();
 		}
 		finally {

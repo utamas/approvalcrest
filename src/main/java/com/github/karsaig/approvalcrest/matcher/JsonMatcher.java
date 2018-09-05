@@ -112,7 +112,9 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 
 	@Override
 	public <V> JsonMatcher<T> with(final String fieldPath, final Matcher<V> matcher) {
-		throw new UnsupportedOperationException("JSON approval with custom matcher not yet supported!");
+		ignoring(fieldPath);
+		customMatchers.put(fieldPath, matcher);
+		return this;
 	}
 
 	@Override
@@ -170,6 +172,14 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		return matches;
 	}
 
+	@Override
+	public CustomisableMatcher<T> ignoring(String... fieldPaths) {
+		for(String fieldPath : fieldPaths){
+			pathsToIgnore.add(fieldPath);
+		}
+		return this;
+	}
+	
 	private boolean handleInPlaceOverwrite(Object actual,Gson gson) {
 		if("true".equals(System.getProperty(UPDATE_IN_PLACE_NAME))) {
 			overwriteApprovedFile(actual, gson);
