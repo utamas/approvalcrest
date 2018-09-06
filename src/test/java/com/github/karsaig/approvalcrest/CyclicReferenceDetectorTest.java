@@ -9,26 +9,31 @@
  */
 package com.github.karsaig.approvalcrest;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-
-import com.github.karsaig.approvalcrest.model.cyclic.*;
-import com.google.common.collect.Lists;
+import static com.github.karsaig.approvalcrest.CyclicReferenceDetector.getClassesWithCircularReferences;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.empty;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.github.karsaig.approvalcrest.CyclicReferenceDetector.getClassesWithCircularReferences;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+
+import com.github.karsaig.approvalcrest.model.cyclic.Element;
+import com.github.karsaig.approvalcrest.model.cyclic.Five;
+import com.github.karsaig.approvalcrest.model.cyclic.Four;
+import com.github.karsaig.approvalcrest.model.cyclic.One;
+import com.github.karsaig.approvalcrest.model.cyclic.Three;
+import com.github.karsaig.approvalcrest.model.cyclic.Two;
 
 /**
  * Tests which verify the {@link com.github.karsaig.approvalcrest.CyclicReferenceDetector} returns the classes which participate in a cyclic reference.

@@ -5,8 +5,6 @@ import static com.github.karsaig.approvalcrest.matcher.Matchers.sameJsonAsApprov
 
 import java.time.LocalDate;
 
-import org.hamcrest.Matchers;
-import org.junit.ComparisonFailure;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

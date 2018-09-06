@@ -26,7 +26,6 @@ import java.util.Set;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 
-import com.github.karsaig.approvalcrest.MatcherAssert;
 import com.github.karsaig.approvalcrest.model.Bean;
 import com.github.karsaig.approvalcrest.model.BeanWithPrimitives;
 import com.github.karsaig.approvalcrest.model.ChildBean;

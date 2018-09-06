@@ -9,8 +9,6 @@
  */
 package com.github.karsaig.approvalcrest.matcher;
 
-import java.util.Comparator;
-
 import org.hamcrest.Matcher;
 
 /**
@@ -48,6 +46,16 @@ public interface CustomisableMatcher<T> extends Matcher<T> {
 	 * @return the instance of the matcher
 	 */
 	CustomisableMatcher<T> ignoring(Class<?> clazz);
+	
+	/**
+	 * Specify the object types of the fields to be skipped from the matcher comparison.
+	 * Example:
+	 * <pre>sameBeanAs(expected).ignoring(Bean.class)</pre>
+	 * 
+	 * @param clazz the object types to be skipped from the comparison.
+	 * @return the instance of the matcher
+	 */
+	CustomisableMatcher<T> ignoring(Class<?>... clazz);
 
     /**
 	 * Specify the path of the field to be matched with a specific matcher.

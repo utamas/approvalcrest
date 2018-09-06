@@ -9,9 +9,12 @@
  */
 package com.github.karsaig.approvalcrest;
 
+import static java.lang.reflect.Modifier.isStatic;
+import static java.util.Collections.newSetFromMap;
+import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
+
 import java.io.Closeable;
 import java.lang.reflect.Field;
-import java.nio.file.Watchable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -20,10 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hamcrest.Matcher;
-
-import static java.lang.reflect.Modifier.isStatic;
-import static java.util.Collections.newSetFromMap;
-import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
 
 /**
  * Detects classes with fields that have circular reference and returns a set of those classes.
@@ -111,7 +110,7 @@ public class CyclicReferenceDetector {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	private void detectCircularReferenceOnObject(Object object,List<Class<?>> typesToIgnore, List<Matcher<String>> patternsToIgnore,Set<String> pathsToIgnore) {
-    	if(typesToIgnore.contains(object.getClass())){
+    	if(isIgnoredType(object, typesToIgnore)){
     		return;
     	}
     	
@@ -142,6 +141,15 @@ public class CyclicReferenceDetector {
         }
     }
 
+    private boolean isIgnoredType(Object object,List<Class<?>> typesToIgnore){
+    	for(Class<?> clazz : typesToIgnore){
+    		if(clazz.isInstance(object)){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     private boolean treatAsNotIterable(Object object){
     	return Closeable.class.isInstance(object);
     }

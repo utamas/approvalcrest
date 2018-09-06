@@ -180,6 +180,14 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		return this;
 	}
 	
+	@Override
+	public CustomisableMatcher<T> ignoring(Class<?>... clazzs) {
+		for(Class<?> clazz : clazzs){
+			typesToIgnore.add(clazz);
+		}
+		return this;
+	}
+	
 	private boolean handleInPlaceOverwrite(Object actual,Gson gson) {
 		if("true".equals(System.getProperty(UPDATE_IN_PLACE_NAME))) {
 			overwriteApprovedFile(actual, gson);
@@ -402,5 +410,4 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 	void setJsonMatcherUtils(FileStoreMatcherUtils jsonMatcherUtils){
 		this.fileStoreMatcherUtils = jsonMatcherUtils;
 	}
-
 }

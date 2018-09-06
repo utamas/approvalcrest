@@ -12,7 +12,6 @@ import org.hamcrest.DiagnosingMatcher;
 import com.github.karsaig.approvalcrest.ComparisonDescription;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import com.google.gson.Gson;
 
 /**
  * <p>

@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.hamcrest.Matcher;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -37,8 +39,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.graph.GraphAdapterBuilder;
-
-import org.hamcrest.Matcher;
 
 /**
  * Provides an instance of {@link Gson}. If any class type has been ignored on the matcher, the {@link Gson} provided

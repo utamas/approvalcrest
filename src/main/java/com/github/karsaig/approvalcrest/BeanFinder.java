@@ -9,13 +9,13 @@
  */
 package com.github.karsaig.approvalcrest;
 
+import static java.util.Arrays.asList;
+
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import static java.util.Arrays.asList;
 
 /**
  * Returns the object corresponding to the path specified

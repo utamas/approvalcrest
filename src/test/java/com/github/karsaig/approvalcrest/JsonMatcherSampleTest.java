@@ -2,7 +2,6 @@ package com.github.karsaig.approvalcrest;
 
 import org.junit.Test;
 
-import com.github.karsaig.approvalcrest.MatcherAssert;
 import com.github.karsaig.approvalcrest.matcher.Matchers;
 
 /**

@@ -22,7 +22,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 import org.junit.Test;
 
-import com.github.karsaig.approvalcrest.MatcherAssert;
 import com.github.karsaig.approvalcrest.model.ParentBean;
 
 /**

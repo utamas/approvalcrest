@@ -21,9 +21,6 @@ import org.junit.Before;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 
-import com.github.karsaig.approvalcrest.ComparisonDescription;
-import com.github.karsaig.approvalcrest.ResultComparison;
-
 /**
  * Unit tests for {@link ResultComparison}
  */

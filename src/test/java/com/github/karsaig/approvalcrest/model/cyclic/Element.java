@@ -9,7 +9,8 @@
  */
 package com.github.karsaig.approvalcrest.model.cyclic;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class Element {

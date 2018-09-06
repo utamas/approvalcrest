@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.karsaig</groupId>
     <artifactId>approvalcrest</artifactId>
-    <version>0.20-SNAPSHOT</version>
+    <version>0.20</version>
     <packaging>jar</packaging>
     <name>Approvalcrest</name>
     <description>Library that extends the functionality of hamcrest</description>

@@ -13,7 +13,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import com.github.karsaig.approvalcrest.matcher.Matchers;
-import com.github.karsaig.approvalcrest.model.BeanWithPrimitives;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
