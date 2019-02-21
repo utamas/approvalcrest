@@ -34,6 +34,7 @@ import com.github.karsaig.approvalcrest.model.cyclic.Four;
 import com.github.karsaig.approvalcrest.model.cyclic.One;
 import com.github.karsaig.approvalcrest.model.cyclic.Three;
 import com.github.karsaig.approvalcrest.model.cyclic.Two;
+import com.google.common.base.Function;
 
 /**
  * Tests which verify the {@link com.github.karsaig.approvalcrest.CyclicReferenceDetector} returns the classes which participate in a cyclic reference.
@@ -46,7 +47,9 @@ public class CyclicReferenceDetectorTest {
 	
     @Test
     public void shouldReturnAnEmptySetWhenTheObjectIsNull() {
-        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(null,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+    	MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+    	
+        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(null,matcherConfig);
 
         assertThat(returnedObjects.isEmpty(), is(true));
     }
@@ -55,7 +58,9 @@ public class CyclicReferenceDetectorTest {
     public void shouldReturnAnEmptyListWhenThereIsNoCircularReference() {
         One one = new One();
         one.setGenericObject(new Two());
-        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,matcherConfig);
         
         assertThat(returnedObjects.isEmpty(), is(true));
     }
@@ -66,12 +71,34 @@ public class CyclicReferenceDetectorTest {
         Two two = new Two();
         two.setGenericObject(one);
         one.setGenericObject(two);
-
-        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedObjects, hasItem(One.class));
     }
 
+    @Test
+    public void shouldReturnTheClassWithCyclicReferenceWhenTheObjectHasAFieldWithCyclicReferenceAndFieldIsNotSkipped() {
+        One one = new One();
+        Two two = new Two();
+        two.setGenericObject(one);
+        one.setGenericObject(two);
+        Function<Object, Boolean> fieldSkipper = new Function<Object, Boolean>() {
+			
+			@Override
+			public Boolean apply(Object input) {
+				return Three.class.isInstance(input);
+			}
+		};
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE)
+        		.addSkipCircularReferenceChecker(fieldSkipper);
+        
+        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,matcherConfig);
+
+        assertThat(returnedObjects, hasItem(One.class));
+    }
+    
     @Test
     public void shouldReturnEmptyListWhenTheObjectHasAFieldWithCyclicReferenceButTheTypeIsIgnored() {
         One one = new One();
@@ -80,11 +107,37 @@ public class CyclicReferenceDetectorTest {
         one.setGenericObject(two);
         List<Class<?>> typesToIgnore = new ArrayList<Class<?>>();
         typesToIgnore.add(Two.class);
-
-        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,typesToIgnore,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(typesToIgnore).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedObjects.isEmpty(), is(true));
     }
+    
+    @Test
+    public void shouldReturnEmptyListWhenTheObjectHasAFieldWithCyclicReferenceButTheFieldIsSkipped() {
+        One one = new One();
+        Two two = new Two();
+        two.setGenericObject(one);
+        one.setGenericObject(two);
+        List<Class<?>> typesToIgnore = new ArrayList<Class<?>>();
+        typesToIgnore.add(Two.class);
+        Function<Object, Boolean> fieldSkipper = new Function<Object, Boolean>() {
+			
+			@Override
+			public Boolean apply(Object input) {
+				return Two.class.isInstance(input);
+			}
+		};
+        
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE)
+        		.addSkipCircularReferenceChecker(fieldSkipper);
+        
+        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,matcherConfig);
+
+        assertThat(returnedObjects.isEmpty(), is(true));
+    }
+   
     
     @Test
     public void shouldReturnEmptyListWhenTheObjectHasAFieldWithCyclicReferenceButTheFieldNameIsIgnored() {
@@ -94,8 +147,9 @@ public class CyclicReferenceDetectorTest {
         one.setGenericObject(two);
         List<Matcher<String>> fieldNamesToIgnore = new ArrayList<Matcher<String>>();
         fieldNamesToIgnore.add(Matchers.is("twoObject"));
-
-        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,fieldNamesToIgnore,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(fieldNamesToIgnore).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedObjects = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedObjects.isEmpty(), is(true));
     }
@@ -109,8 +163,9 @@ public class CyclicReferenceDetectorTest {
         one.setGenericObject(two);
         two.setGenericObject(three);
         three.setGenericObject(one);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses, hasItem(One.class));
     }
@@ -126,8 +181,9 @@ public class CyclicReferenceDetectorTest {
         three.setGenericObject(one);
         List<Class<?>> typesToIgnore = new ArrayList<Class<?>>();
         typesToIgnore.add(Three.class);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,typesToIgnore,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(typesToIgnore).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -143,8 +199,9 @@ public class CyclicReferenceDetectorTest {
         three.setGenericObject(one);
         List<Matcher<String>> fieldNamesToIgnore = new ArrayList<Matcher<String>>();
         fieldNamesToIgnore.add(Matchers.is("threeObject"));
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,fieldNamesToIgnore,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(fieldNamesToIgnore).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -153,8 +210,9 @@ public class CyclicReferenceDetectorTest {
     public void shouldReturnAnEmptySetWhenTheObjectHasANullField() {
         One one = new One();
         one.setGenericObject(null);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -165,8 +223,9 @@ public class CyclicReferenceDetectorTest {
         one.setGenericObject(null);
         List<Class<?>> typesToIgnore = new ArrayList<Class<?>>();
         typesToIgnore.add(Object.class);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(typesToIgnore).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
         
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,typesToIgnore,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -177,8 +236,9 @@ public class CyclicReferenceDetectorTest {
         one.setGenericObject(null);
         List<Matcher<String>> fieldNamesToIgnore = new ArrayList<Matcher<String>>();
         fieldNamesToIgnore.add(Matchers.is("oneObject"));
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(fieldNamesToIgnore).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
         
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,fieldNamesToIgnore,EMPTY_PATHS_TO_IGNORE);
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -187,8 +247,9 @@ public class CyclicReferenceDetectorTest {
     public void shouldReturnAnEmptySetWhenTheObjectHasAPrimitiveOrWrapperField() {
         One one = new One();
         one.setGenericObject(5);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -197,8 +258,9 @@ public class CyclicReferenceDetectorTest {
     public void shouldReturnAnEmptySetWhenTheObjectHasAStringField() {
         One one = new One();
         one.setGenericObject("irrelevant string");
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -207,8 +269,9 @@ public class CyclicReferenceDetectorTest {
     public void shouldReturnAnEmptySetWhenTheObjectHasAnEnumField() {
         One one = new One();
         one.setGenericObject(Five.FIVE);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -222,8 +285,9 @@ public class CyclicReferenceDetectorTest {
         two.setGenericObject(three);
         three.setGenericObject(one);
         one.setGenericObject(Arrays.asList(two));
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses, hasItem(One.class));
     }
@@ -239,8 +303,9 @@ public class CyclicReferenceDetectorTest {
         one.setGenericObject(Arrays.asList(two));
         List<Matcher<String>> fieldNamesToIgnore = new ArrayList<Matcher<String>>();
         fieldNamesToIgnore.add(Matchers.is("twoObject"));
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(fieldNamesToIgnore).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
         
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,fieldNamesToIgnore,EMPTY_PATHS_TO_IGNORE);
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -257,8 +322,9 @@ public class CyclicReferenceDetectorTest {
 
         two.setGenericObject(one);
         one.setGenericObject(Arrays.asList(two, three));
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses, hasItems(One.class, Three.class));
     }
@@ -267,8 +333,9 @@ public class CyclicReferenceDetectorTest {
     public void shouldReturnTheClassWithCircularReferenceWhenTheObjectHasAFieldThatReferencesItself() {
         One one = new One();
         one.setGenericObject(one);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses, hasItem(One.class));
     }
@@ -283,8 +350,9 @@ public class CyclicReferenceDetectorTest {
 
         twoMap.put(1, two);
         one.setGenericObject(twoMap);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses, hasItem(One.class));
     }
@@ -295,8 +363,9 @@ public class CyclicReferenceDetectorTest {
         One one = new One();
         one.setGenericObject(four);
         four.setGenericObject(one);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses, hasItem(One.class));
     }
@@ -309,8 +378,9 @@ public class CyclicReferenceDetectorTest {
         four.setGenericObject(one);
         List<Matcher<String>> fieldNamesToIgnore = new ArrayList<Matcher<String>>();
         fieldNamesToIgnore.add(Matchers.is("threeObject"));
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,fieldNamesToIgnore,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(fieldNamesToIgnore).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -325,8 +395,9 @@ public class CyclicReferenceDetectorTest {
 
         twoMap.put(two, 1);
         one.setGenericObject(twoMap);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(one,matcherConfig);
 
         assertThat(returnedClasses, hasItem(One.class));
     }
@@ -340,8 +411,9 @@ public class CyclicReferenceDetectorTest {
         four.setGenericObject(one);
         four.setSubClassField(two);
         one.setGenericObject(two);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(four,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(four,matcherConfig);
 
         assertThat(returnedClasses.isEmpty(), is(true));
     }
@@ -364,15 +436,18 @@ public class CyclicReferenceDetectorTest {
         four1.setSubClassField(two1);
         two1.setGenericObject(three);
         three.setGenericObject(two1);
-
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(four,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+        MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+        
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(four,matcherConfig);
 
         assertThat(returnedClasses, hasItems(Four.class, Two.class));
     }
 
     @Test
     public void shouldNotAddStaticFieldsToTheSetOfCircularReferences() {
-        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(Element.ONE,EMPTY_TYPES_TO_IGNORE,EMPTY_PATTERNS_TO_IGNORE,EMPTY_PATHS_TO_IGNORE);
+    	MatcherConfiguration matcherConfig = new MatcherConfiguration().addTypeToIgnore(EMPTY_TYPES_TO_IGNORE).addPatternToIgnore(EMPTY_PATTERNS_TO_IGNORE).addPathToIgnore(EMPTY_PATHS_TO_IGNORE);
+    	
+        Set<Class<?>> returnedClasses = getClassesWithCircularReferences(Element.ONE,matcherConfig);
 
         assertThat(returnedClasses, is(empty()));
     }

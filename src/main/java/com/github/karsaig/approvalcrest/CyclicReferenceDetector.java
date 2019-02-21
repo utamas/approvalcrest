@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.hamcrest.Matcher;
 
+import com.google.common.base.Function;
+
 /**
  * Detects classes with fields that have circular reference and returns a set of those classes.
  */
@@ -38,11 +40,11 @@ public class CyclicReferenceDetector {
      * @param object the object to check if it has circular reference fields
      * @return a {@link Set} of {@link Class}es.
      */
-    public static Set<Class<?>> getClassesWithCircularReferences(Object object,List<Class<?>> typesToIgnore, List<Matcher<String>> patternsToIgnore,Set<String> pathsToIgnore) {
+    public static Set<Class<?>> getClassesWithCircularReferences(Object object,MatcherConfiguration matcherConfiguration) {
         CyclicReferenceDetector cyclicReferenceDetector = new CyclicReferenceDetector();
 
         if (object != null) {
-            cyclicReferenceDetector.detectCircularReferenceOnObject(object,typesToIgnore,patternsToIgnore,pathsToIgnore);
+            cyclicReferenceDetector.detectCircularReferenceOnObject(object,matcherConfiguration);
         }
 
         return getClasses(cyclicReferenceDetector.objectsWithCircularReferences);
@@ -68,7 +70,7 @@ public class CyclicReferenceDetector {
      * @param clazz the class being used (necessary if we also checking super class as getDeclaredFields only returns
      *              fields of a given class, but not its super class)
      */
-    private void detectCircularReferenceOnFields(Object object, Class<?> clazz, List<Class<?>> typesToIgnore, List<Matcher<String>> patternsToIgnore,Set<String> pathsToIgnore) {
+    private void detectCircularReferenceOnFields(Object object, Class<?> clazz, MatcherConfiguration matcherConfiguration) {
         if (objectsWithCircularReferences.contains(object)) {
             return;
         }
@@ -78,10 +80,10 @@ public class CyclicReferenceDetector {
 
             if (!isStatic(field.getModifiers())) {
                 try {
-                	if(!isFieldnameIgnored(field, patternsToIgnore)){
+                	if(!isFieldnameIgnored(field, matcherConfiguration.getPatternsToIgnore())){
                 		Object fieldValue = field.get(object);
                 		if (fieldValue != null) {
-                			detectCircularReferenceOnObject(fieldValue,typesToIgnore,patternsToIgnore,pathsToIgnore);
+                			detectCircularReferenceOnObject(fieldValue,matcherConfiguration);
                 		}
                 	}
                 } catch (IllegalAccessException e) {
@@ -89,7 +91,7 @@ public class CyclicReferenceDetector {
                 }
             }
         }
-        detectCircularReferencesFromTheSuperClass(object, clazz,typesToIgnore,patternsToIgnore,pathsToIgnore);
+        detectCircularReferencesFromTheSuperClass(object, clazz,matcherConfiguration);
     }
 
     private boolean isFieldnameIgnored(Field field, List<Matcher<String>> patternsToIgnore){
@@ -109,8 +111,8 @@ public class CyclicReferenceDetector {
      * @param object the object to detect circular reference on
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	private void detectCircularReferenceOnObject(Object object,List<Class<?>> typesToIgnore, List<Matcher<String>> patternsToIgnore,Set<String> pathsToIgnore) {
-    	if(isIgnoredType(object, typesToIgnore)){
+	private void detectCircularReferenceOnObject(Object object,MatcherConfiguration matcherConfiguration) {
+    	if(isIgnoredType(object, matcherConfiguration)){
     		return;
     	}
     	
@@ -128,25 +130,32 @@ public class CyclicReferenceDetector {
 
         if (object instanceof Iterable && !treatAsNotIterable(object)) {
             nodesInPaths.add(object);
-            detectCircularReferenceFromObjectsContainedInAnIterable((Iterable) object,typesToIgnore,patternsToIgnore,pathsToIgnore);
+            detectCircularReferenceFromObjectsContainedInAnIterable((Iterable) object,matcherConfiguration);
         } else if (object instanceof Map) {
             nodesInPaths.add(object);
-            detectCircularReferencesFromObjectsInAMap((Map) object,typesToIgnore,patternsToIgnore,pathsToIgnore);
+            detectCircularReferencesFromObjectsInAMap((Map) object,matcherConfiguration);
         }
 
         if (isValid) {
             nodesInPaths.add(object);
-            detectCircularReferenceOnFields(object, object.getClass(), typesToIgnore,patternsToIgnore,pathsToIgnore);
+            detectCircularReferenceOnFields(object, object.getClass(), matcherConfiguration);
             nodesInPaths.remove(object);
         }
     }
 
-    private boolean isIgnoredType(Object object,List<Class<?>> typesToIgnore){
-    	for(Class<?> clazz : typesToIgnore){
+    private boolean isIgnoredType(Object object,MatcherConfiguration matcherConfiguration){
+    	for(Class<?> clazz : matcherConfiguration.getTypesToIgnore()){
     		if(clazz.isInstance(object)){
     			return true;
     		}
     	}
+    	
+    	for(Function<Object, Boolean> actual : matcherConfiguration.getSkipCircularReferenceCheck()) {
+    		if(actual.apply(object)) {
+    			return true;
+    		}
+    	}
+    	
     	return false;
     }
     
@@ -160,11 +169,11 @@ public class CyclicReferenceDetector {
      * @param object the object to check if it has circular reference
      * @param clazz Used to prevent stackOverFlow exception
      */
-    private void detectCircularReferencesFromTheSuperClass(Object object, Class<?> clazz, List<Class<?>> typesToIgnore, List<Matcher<String>> patternsToIgnore,Set<String> pathsToIgnore) {
+    private void detectCircularReferencesFromTheSuperClass(Object object, Class<?> clazz, MatcherConfiguration matcherConfiguration) {
         Class<?> superclass = clazz.getSuperclass();
 
         if (superclass != null && validateAnObject(object)) {
-            detectCircularReferenceOnFields(object, superclass, typesToIgnore,patternsToIgnore,pathsToIgnore);
+            detectCircularReferenceOnFields(object, superclass,matcherConfiguration);
         }
     }
 
@@ -173,9 +182,9 @@ public class CyclicReferenceDetector {
      * 
      * @param map the {@link Map} with objects to checks for cyclic references on
      */
-    private void detectCircularReferencesFromObjectsInAMap(Map<Object, Object> map,List<Class<?>> typesToIgnore, List<Matcher<String>> patternsToIgnore,Set<String> pathsToIgnore) {
-        detectCircularReferenceFromObjectsContainedInAnIterable(map.values(), typesToIgnore,patternsToIgnore,pathsToIgnore);
-        detectCircularReferenceFromObjectsContainedInAnIterable(map.keySet(), typesToIgnore,patternsToIgnore,pathsToIgnore);
+    private void detectCircularReferencesFromObjectsInAMap(Map<Object, Object> map,MatcherConfiguration matcherConfiguration) {
+        detectCircularReferenceFromObjectsContainedInAnIterable(map.values(), matcherConfiguration);
+        detectCircularReferenceFromObjectsContainedInAnIterable(map.keySet(), matcherConfiguration);
     }
 
     /**
@@ -183,10 +192,10 @@ public class CyclicReferenceDetector {
      * 
      * @param iterable the object to iterate through.
      */
-    private void detectCircularReferenceFromObjectsContainedInAnIterable(Iterable<Object> iterable,List<Class<?>> typesToIgnore, List<Matcher<String>> patternsToIgnore,Set<String> pathsToIgnore) {
+    private void detectCircularReferenceFromObjectsContainedInAnIterable(Iterable<Object> iterable,MatcherConfiguration matcherConfiguration) {
         for (Object elementInCollection : iterable) {
             if (elementInCollection != null) {
-                detectCircularReferenceOnObject(elementInCollection,typesToIgnore,patternsToIgnore,pathsToIgnore);
+                detectCircularReferenceOnObject(elementInCollection,matcherConfiguration);
             }
         }
     }

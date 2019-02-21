@@ -30,6 +30,8 @@ import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.github.karsaig.approvalcrest.ComparisonDescription;
+import com.github.karsaig.approvalcrest.MatcherConfiguration;
+import com.google.common.base.Function;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
@@ -38,13 +40,10 @@ import com.google.gson.JsonElement;
  * ignore in the comparison, or fields to be matched with a custom matcher
  */
 class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements CustomisableMatcher<T> {
-	protected final Set<String> pathsToIgnore = new HashSet<String>();
-	private final Map<String, Matcher<?>> customMatchers = new HashMap<String, Matcher<?>>();
-	protected final List<Class<?>> typesToIgnore = new ArrayList<Class<?>>();
-	protected final List<Matcher<String>> patternsToIgnore = new ArrayList<Matcher<String>>();
   protected final Set<Class<?>> circularReferenceTypes = new HashSet<Class<?>>();
   protected final T expected;
   private GsonConfiguration configuration;
+  protected MatcherConfiguration matcherConfiguration = new MatcherConfiguration(); 
 
     public DiagnosingCustomisableMatcher(T expected) {
         this.expected = expected;
@@ -52,20 +51,20 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
 
     @Override
 	public void describeTo(Description description) {
-		Gson gson = gson(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
+		Gson gson = gson(matcherConfiguration, circularReferenceTypes, configuration);
 		description.appendText(filterJson(gson, expected));
-		for (String fieldPath : customMatchers.keySet()) {
+		for (String fieldPath : matcherConfiguration.getCustomMatchers().keySet()) {
 			description.appendText("\nand ")
 				.appendText(fieldPath).appendText(" ")
-				.appendDescriptionOf(customMatchers.get(fieldPath));
+				.appendDescriptionOf(matcherConfiguration.getCustomMatchers().get(fieldPath));
 		}
 	}
 
 	@Override
 	protected boolean matches(Object actual, Description mismatchDescription) {
-        circularReferenceTypes.addAll(getClassesWithCircularReferences(actual,typesToIgnore,patternsToIgnore,pathsToIgnore));
-        circularReferenceTypes.addAll(getClassesWithCircularReferences(expected,typesToIgnore,patternsToIgnore,pathsToIgnore));
-        Gson gson = gson(typesToIgnore, patternsToIgnore, circularReferenceTypes, configuration);
+        circularReferenceTypes.addAll(getClassesWithCircularReferences(actual,matcherConfiguration));
+        circularReferenceTypes.addAll(getClassesWithCircularReferences(expected,matcherConfiguration));
+        Gson gson = gson(matcherConfiguration, circularReferenceTypes, configuration);
 
     		if (!areCustomMatchersMatching(actual, mismatchDescription, gson)) {
     			return false;
@@ -84,9 +83,9 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
 
 	private boolean areCustomMatchersMatching(Object actual, Description mismatchDescription, Gson gson) {
 		Map<Object, Matcher<?>> customMatching = new HashMap<Object, Matcher<?>>();
-		for (Entry<String, Matcher<?>> entry : customMatchers.entrySet()) {
+		for (Entry<String, Matcher<?>> entry : matcherConfiguration.getCustomMatchers().entrySet()) {
 			Object object = actual == null ? null : findBeanAt(entry.getKey(), actual);
-			customMatching.put(object, customMatchers.get(entry.getKey()));
+			customMatching.put(object, matcherConfiguration.getCustomMatchers().get(entry.getKey()));
 		}
 
 		for (Entry<Object, Matcher<?>> entry : customMatching.entrySet()) {
@@ -104,25 +103,25 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
 
 	@Override
 	public CustomisableMatcher<T> ignoring(String fieldPath) {
-		pathsToIgnore.add(fieldPath);
+		matcherConfiguration.addPathToIgnore(fieldPath);
 		return this;
 	}
 
 	@Override
 	public CustomisableMatcher<T> ignoring(Class<?> clazz) {
-		typesToIgnore.add(clazz);
+		matcherConfiguration.addTypeToIgnore(clazz);
 		return this;
 	}
 
 	@Override
 	public CustomisableMatcher<T> ignoring(Matcher<String> fieldNamePattern) {
-	    patternsToIgnore.add(fieldNamePattern);
+		matcherConfiguration.addPatternToIgnore(fieldNamePattern);
 	    return this;
 	}
 
     @Override
 	public <V> CustomisableMatcher<T> with(String fieldPath, Matcher<V> matcher) {
-		customMatchers.put(fieldPath, matcher);
+    	matcherConfiguration.addCustomMatcher(fieldPath, matcher);
 		return this;
 	}
 
@@ -165,7 +164,7 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
 	}
 
 	private void appendFieldPath(Matcher<?> matcher, Description mismatchDescription) {
-		for (Entry<String, Matcher<?>> entry : customMatchers.entrySet()) {
+		for (Entry<String, Matcher<?>> entry : matcherConfiguration.getCustomMatchers().entrySet()) {
 			if (entry.getValue().equals(matcher)) {
 				mismatchDescription.appendText(entry.getKey()).appendText(" ");
 			}
@@ -174,8 +173,8 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
 
 	private String filterJson(Gson gson, Object object) {
 		Set<String> set = new HashSet<String>();
-		set.addAll(pathsToIgnore);
-		set.addAll(customMatchers.keySet());
+		set.addAll(matcherConfiguration.getPathsToIgnore());
+		set.addAll(matcherConfiguration.getCustomMatchers().keySet());
 		JsonElement filteredJson = findPaths(gson, object, set);
 
 		return removeSetMarker(gson.toJson(filteredJson));
@@ -187,17 +186,25 @@ class DiagnosingCustomisableMatcher<T> extends DiagnosingMatcher<T> implements C
 
 	@Override
 	public CustomisableMatcher<T> ignoring(String... fieldPaths) {
-		for(String fieldPath : fieldPaths){
-			pathsToIgnore.add(fieldPath);
-		}
+		matcherConfiguration.addPathToIgnore(fieldPaths);
 		return this;
 	}
 	
 	@Override
 	public CustomisableMatcher<T> ignoring(Class<?>... clazzs) {
-		for(Class<?> clazz : clazzs){
-			typesToIgnore.add(clazz);
-		}
+		matcherConfiguration.addTypeToIgnore(clazzs);
+		return this;
+	}
+
+	@Override
+	public CustomisableMatcher<T> skipCircularReferenceCheck(Function<Object, Boolean> matcher) {
+		matcherConfiguration.addSkipCircularReferenceChecker(matcher);
+		return this;
+	}
+
+	@Override
+	public CustomisableMatcher<T> skipCircularReferenceCheck(Function<Object, Boolean>... matchers) {
+		matcherConfiguration.addSkipCircularReferenceChecker(matchers);
 		return this;
 	}
 }

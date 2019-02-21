@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.hamcrest.Matcher;
 
+import com.github.karsaig.approvalcrest.MatcherConfiguration;
 import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -54,7 +55,7 @@ class GsonProvider {
      * @param circularReferenceTypes cater for circular referenced objects
      * @return an instance of {@link Gson}
      */
-    public static Gson gson(final List<Class<?>> typesToIgnore, final List<Matcher<String>> fieldsToIgnore, Set<Class<?>> circularReferenceTypes) {
+    public static Gson gson(final MatcherConfiguration matcherConfiguration, Set<Class<?>> circularReferenceTypes) {
     	final GsonBuilder gsonBuilder = initGson();
 
         if (!circularReferenceTypes.isEmpty()) {
@@ -69,7 +70,7 @@ class GsonProvider {
 
         markSetAndMapFields(gsonBuilder);
 
-        registerExclusionStrategies(gsonBuilder, typesToIgnore, fieldsToIgnore);
+        registerExclusionStrategies(gsonBuilder, matcherConfiguration);
 
 
         return gsonBuilder.create();
@@ -84,11 +85,10 @@ class GsonProvider {
      * @param additionalConfig provides additional gson configuration
      * @return an instance of {@link Gson}
      */
-    public static Gson gson(final List<Class<?>> typesToIgnore, final List<Matcher<String>> fieldsToIgnore,
-            final Set<Class<?>> circularReferenceTypes, final GsonConfiguration additionalConfig) {
+    public static Gson gson(final MatcherConfiguration matcherConfiguration, final Set<Class<?>> circularReferenceTypes, final GsonConfiguration additionalConfig) {
         final GsonBuilder gsonBuilder = initGson();
 
-        defaultGsonConfiguration(gsonBuilder, typesToIgnore, fieldsToIgnore, circularReferenceTypes);
+        defaultGsonConfiguration(gsonBuilder, matcherConfiguration, circularReferenceTypes);
         if (additionalConfig != null) {
             additionalConfiguration(additionalConfig, gsonBuilder);
         }
@@ -96,8 +96,7 @@ class GsonProvider {
         return gsonBuilder.create();
     }
 
-    private static void defaultGsonConfiguration(final GsonBuilder gsonBuilder, final List<Class<?>> typesToIgnore,
-            final List<Matcher<String>> fieldsToIgnore, final Set<Class<?>> circularReferenceTypes) {
+    private static void defaultGsonConfiguration(final GsonBuilder gsonBuilder, final MatcherConfiguration matcherConfiguration, final Set<Class<?>> circularReferenceTypes) {
 
         if (!circularReferenceTypes.isEmpty()) {
             registerCircularReferenceTypes(circularReferenceTypes, gsonBuilder);
@@ -111,7 +110,7 @@ class GsonProvider {
 
         markSetAndMapFields(gsonBuilder);
 
-        registerExclusionStrategies(gsonBuilder, typesToIgnore, fieldsToIgnore);
+        registerExclusionStrategies(gsonBuilder, matcherConfiguration);
     }
 
     private static void additionalConfiguration(final GsonConfiguration additionalConfig, final GsonBuilder gsonBuilder) {
@@ -138,15 +137,15 @@ class GsonProvider {
 
     }
 
-	private static void registerExclusionStrategies(GsonBuilder gsonBuilder, final List<Class<?>> typesToIgnore, final List<Matcher<String>> fieldsToIgnore) {
-		if (typesToIgnore.isEmpty() && fieldsToIgnore.isEmpty()) {
+	private static void registerExclusionStrategies(GsonBuilder gsonBuilder, final MatcherConfiguration matcherConfiguration) {
+		if (matcherConfiguration.getTypesToIgnore().isEmpty() && matcherConfiguration.getPatternsToIgnore().isEmpty()) {
 			return;
 		}
 
 		gsonBuilder.setExclusionStrategies(new ExclusionStrategy() {
             @Override
             public boolean shouldSkipField(FieldAttributes f) {
-                for (Matcher<String> p : fieldsToIgnore) {
+                for (Matcher<String> p : matcherConfiguration.getPatternsToIgnore()) {
                     if (p.matches(f.getName())) {
                         return true;
                     }
@@ -156,7 +155,7 @@ class GsonProvider {
 
             @Override
             public boolean shouldSkipClass(Class<?> clazz) {
-                return (typesToIgnore.contains(clazz));
+                return (matcherConfiguration.getTypesToIgnore().contains(clazz));
             }
         });
 	}

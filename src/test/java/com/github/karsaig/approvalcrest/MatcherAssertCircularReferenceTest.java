@@ -16,15 +16,26 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Type;
+
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.junit.Test.None;
 
+import com.github.karsaig.approvalcrest.matcher.GsonConfiguration;
 import com.github.karsaig.approvalcrest.model.cyclic.CircularReferenceBean;
 import com.github.karsaig.approvalcrest.model.cyclic.Element;
 import com.github.karsaig.approvalcrest.model.cyclic.Four;
 import com.github.karsaig.approvalcrest.model.cyclic.One;
 import com.github.karsaig.approvalcrest.model.cyclic.Two;
+import com.google.common.base.Function;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * Unit tests which verify circular references are handled automatically.
@@ -66,6 +77,50 @@ public class MatcherAssertCircularReferenceTest {
         assertThat(root, sameBeanAs(root));
     }
 
+    @Test(expected = None.class)
+    public void shouldNotThrowStackOverflowExceptionWhenCircularReferenceExistsIsSkippedButCustomSerialized() {
+        Four root = new Four();
+        Four child1 = new Four();
+        Four child2 = new Four();
+        root.setGenericObject(child1);
+        root.setSubClassField(child2);
+
+        One subRoot = new One();
+        One subRootChild = new One();
+        subRoot.setGenericObject(subRootChild);
+        subRootChild.setGenericObject(subRoot); // circular
+        Function<Object, Boolean> skipper1 = new Function<Object, Boolean>() {
+			
+			@Override
+			public Boolean apply(Object input) {
+				return One.class.isInstance(input);
+			}
+		};
+		GsonConfiguration config = new GsonConfiguration();
+		config.addTypeAdapter(One.class, new DummyOneJsonSerializer());
+		
+        
+        child2.setGenericObject(subRoot);
+
+        assertThat(root, sameBeanAs(root).skipCircularReferenceCheck(skipper1).withGsonConfiguration(config));
+    }
+    
+    private class DummyOneJsonSerializer implements JsonDeserializer<One>,JsonSerializer<One>  {
+
+		private static final String LONG_SUFFIX = " Long_variable";
+
+		@Override
+		public One deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+		        return null;
+		    }
+
+		@Override
+		public JsonElement serialize(final One src, final Type typeOfSrc, final JsonSerializationContext context) {
+		    return new JsonPrimitive("customSerializedOneCircle");
+		}
+
+    }
+    
     @Test(expected = ComparisonFailure.class)
     public void doesNotThrowStackOverflowErrorWhenComparedObjectsHaveDifferentCircularReferences() {
         Object expected = new One();

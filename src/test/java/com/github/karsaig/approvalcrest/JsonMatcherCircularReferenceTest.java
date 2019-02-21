@@ -1,6 +1,7 @@
 package com.github.karsaig.approvalcrest;
 
 import static com.github.karsaig.approvalcrest.MatcherAssert.assertThat;
+import static com.github.karsaig.approvalcrest.matcher.Matchers.sameBeanAs;
 import static com.github.karsaig.approvalcrest.matcher.Matchers.sameJsonAsApproved;
 import static com.github.karsaig.approvalcrest.model.cyclic.CircularReferenceBean.Builder.circularReferenceBean;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -9,12 +10,14 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Type;
 import java.sql.SQLException;
 
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.junit.Test.None;
 
+import com.github.karsaig.approvalcrest.matcher.GsonConfiguration;
 import com.github.karsaig.approvalcrest.model.ClosableFields;
 import com.github.karsaig.approvalcrest.model.IterableFields;
 import com.github.karsaig.approvalcrest.model.cyclic.CircularReferenceBean;
@@ -22,7 +25,15 @@ import com.github.karsaig.approvalcrest.model.cyclic.Element;
 import com.github.karsaig.approvalcrest.model.cyclic.Four;
 import com.github.karsaig.approvalcrest.model.cyclic.One;
 import com.github.karsaig.approvalcrest.model.cyclic.Two;
+import com.google.common.base.Function;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 public class JsonMatcherCircularReferenceTest {
 	
@@ -120,4 +131,48 @@ public class JsonMatcherCircularReferenceTest {
 		
 		assertThat(input, sameJsonAsApproved());
 	}
+    
+    @Test
+    public void shouldNotThrowStackOverflowExceptionWhenCircularReferenceExistsIsSkippedButCustomSerialized() {
+        Four root = new Four();
+        Four child1 = new Four();
+        Four child2 = new Four();
+        root.setGenericObject(child1);
+        root.setSubClassField(child2);
+
+        One subRoot = new One();
+        One subRootChild = new One();
+        subRoot.setGenericObject(subRootChild);
+        subRootChild.setGenericObject(subRoot); // circular
+        Function<Object, Boolean> skipper1 = new Function<Object, Boolean>() {
+			
+			@Override
+			public Boolean apply(Object input) {
+				return One.class.isInstance(input);
+			}
+		};
+		GsonConfiguration config = new GsonConfiguration();
+		config.addTypeAdapter(One.class, new DummyOneJsonSerializer());
+		
+        
+        child2.setGenericObject(subRoot);
+
+        assertThat(root, sameJsonAsApproved().skipCircularReferenceCheck(skipper1).withGsonConfiguration(config));
+    }
+    
+    private class DummyOneJsonSerializer implements JsonDeserializer<One>,JsonSerializer<One>  {
+
+		private static final String LONG_SUFFIX = " Long_variable";
+
+		@Override
+		public One deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+		        return null;
+		    }
+
+		@Override
+		public JsonElement serialize(final One src, final Type typeOfSrc, final JsonSerializationContext context) {
+		    return new JsonPrimitive("customSerializedOneCircle");
+		}
+
+    }
 }

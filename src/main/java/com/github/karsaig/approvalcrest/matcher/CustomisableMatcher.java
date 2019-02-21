@@ -11,6 +11,8 @@ package com.github.karsaig.approvalcrest.matcher;
 
 import org.hamcrest.Matcher;
 
+import com.google.common.base.Function;
+
 /**
  * {@link Matcher} implementation where fields and object types can be skipped from the comparison, or matched with
  * custom matchers.
@@ -88,5 +90,18 @@ public interface CustomisableMatcher<T> extends Matcher<T> {
      */
     CustomisableMatcher<T> ignoring(Matcher<String> fieldNamePattern);
     
-
+    /**
+     * Specify function to be applied on fields in order to decide weather to include the field in circular reference check or not.
+     * 
+     * @param matcher
+     * @return the instance of the matcher
+     */
+    CustomisableMatcher<T> skipCircularReferenceCheck(Function<Object, Boolean> matcher);
+    
+    /**
+     * Specify function to be applied on fields in order to decide weather to include the field in circular reference check or not.
+     * @param matchers
+     * @return the instance of the matcher
+     */
+    CustomisableMatcher<T> skipCircularReferenceCheck(Function<Object, Boolean>... matchers);
 }
