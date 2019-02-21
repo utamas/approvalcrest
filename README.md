@@ -151,5 +151,5 @@ To use add the following to your project's pom.xml:
     <dependency>
 		<groupId>com.github.karsaig</groupId>
 		<artifactId>approvalcrest</artifactId>
-		<version>0.15</version>
+		<version>0.21</version>
 	</dependency>
