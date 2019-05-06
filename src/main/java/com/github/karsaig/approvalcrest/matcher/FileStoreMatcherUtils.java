@@ -1,14 +1,20 @@
 package com.github.karsaig.approvalcrest.matcher;
 
+import com.github.karsaig.approvalcrest.ApprovedFile;
+import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
+import com.google.common.hash.Hashing;
+import com.google.common.io.Files;
+import org.junit.Test;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.junit.Test;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Utility class with methods for creating the JSON files for
@@ -18,6 +24,40 @@ import com.google.common.io.Files;
  *
  */
 public class FileStoreMatcherUtils {
+    private static String hashOf(final String fileName, int length) {
+        return Hashing.sha1().hashString(fileName, Charsets.UTF_8).toString().substring(0, length);
+    }
+
+    public static class ApprovedFileMeta {
+
+        private final String testMethodName;
+        private final String testClassName;
+        private final String fileName;
+        private final String filePath;
+
+        public ApprovedFileMeta(String testMethodName, String testClassName, String fileName, String filePath) {
+            this.testMethodName = testMethodName;
+            this.testClassName = testClassName;
+            this.fileName = fileName;
+            this.filePath = filePath;
+        }
+
+        public String getTestMethodName() {
+            return testMethodName;
+        }
+
+        public String getTestClassName() {
+            return testClassName;
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+
+        public String getFilePath() {
+            return filePath;
+        }
+    }
 
 	public static final Object SEPARATOR = "-";
 	private static final String SRC_TEST_JAVA_PATH = "src" + File.separator + "test" + File.separator + "java"
@@ -57,7 +97,7 @@ public class FileStoreMatcherUtils {
 		File file = new File(getFullFileName(fileNameWithPath, true));
 		return writeToFile(file, jsonObject, comment);
 	}
-	
+
 	private String writeToFile(File file,String jsonObject, String comment) throws IOException {
 		BufferedWriter writer = null;
 		try {
@@ -76,7 +116,7 @@ public class FileStoreMatcherUtils {
 			}
 		}
 	}
-	
+
 	public String readFile(File file) throws IOException {
 		String fileContent = Files.toString(file, Charsets.UTF_8);
 
@@ -101,27 +141,62 @@ public class FileStoreMatcherUtils {
 		return file;
 	}
 
-	/**
-	 * Returns the name of the test method, in which the call was originated
-	 * from.
-	 *
-	 * @return test method name in String
-	 */
-	public String getCallerTestMethodName() {
-		StackTraceElement testStackTraceElement = getTestStackTraceElement(Thread.currentThread().getStackTrace());
-		return testStackTraceElement != null ? testStackTraceElement.getMethodName() : null;
-	}
+    private static class ClassCache {
+        private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 
-	/**
-	 * Returns the name of the test class file which the call was originated
-	 * from.
-	 *
-	 * @return test method's class name
-	 */
-	public String getCallerTestClassName() {
-		StackTraceElement testStackTraceElement = getTestStackTraceElement(Thread.currentThread().getStackTrace());
-		return testStackTraceElement != null ? testStackTraceElement.getClassName() : null;
-	}
+        Class<?> get(String className) {
+            try {
+                if (!classes.containsKey(className)) {
+                    classes.put(className, Class.forName(className));
+                }
+
+                return classes.get(className);
+            } catch (ClassNotFoundException cause) {
+                throw new RuntimeException(cause);
+            }
+        }
+    }
+
+    public ApprovedFileMeta getTestCaseMeta(int length) {
+        ApprovedFileMeta approvedFileMeta = null;
+
+        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+
+        ClassCache cache = new ClassCache();
+
+        int index = 0;
+        boolean isTestMethod = false;
+        while (index < trace.length && !isTestMethod) {
+            StackTraceElement element = trace[index];
+
+            String className = element.getClassName();
+            String methodName = element.getMethodName();
+
+            Class<?> type = cache.get(className);
+
+            Method method = findMethod(type, methodName);
+
+            isTestMethod = method != null && method.isAnnotationPresent(Test.class);
+
+            if (isTestMethod) {
+                String fileName = hashOf(methodName, length);
+                String path = hashOf(className, length);
+
+                ApprovedFile approvedFile = method.getAnnotation(ApprovedFile.class);
+                if (approvedFile != null) {
+                    fileName = nonBlankValueOrDefaultTo(approvedFile.name(), fileName);
+                    path = nonBlankValueOrDefaultTo(approvedFile.path(), path);
+                }
+                approvedFileMeta = new ApprovedFileMeta(methodName, className, fileName, path);
+            }
+
+            index++;
+        }
+
+        checkState(isTestMethod, "Non of the method is the call stack is annotated with %s", Test.class.getCanonicalName());
+
+        return approvedFileMeta;
+    }
 
 	/**
 	 * Returns the absolute path of the test class in which the call was
@@ -194,4 +269,8 @@ public class FileStoreMatcherUtils {
 
 		return stringBuilder.toString();
 	}
+
+    private String nonBlankValueOrDefaultTo(String fileName, String methodName) {
+        return fileName == null ? methodName : fileName.trim().isEmpty() ? methodName : fileName;
+    }
 }

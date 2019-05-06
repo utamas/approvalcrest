@@ -5,20 +5,20 @@ import static com.github.karsaig.approvalcrest.CyclicReferenceDetector.getClasse
 import static com.github.karsaig.approvalcrest.FieldsIgnorer.MARKER;
 import static com.github.karsaig.approvalcrest.FieldsIgnorer.findPaths;
 import static com.github.karsaig.approvalcrest.matcher.FileStoreMatcherUtils.SEPARATOR;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.github.karsaig.approvalcrest.matcher.FileStoreMatcherUtils.ApprovedFileMeta;
 import org.hamcrest.Description;
 import org.hamcrest.DiagnosingMatcher;
 import org.hamcrest.Matcher;
@@ -28,9 +28,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import com.github.karsaig.approvalcrest.ComparisonDescription;
 import com.github.karsaig.approvalcrest.MatcherConfiguration;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
 import com.google.common.base.Function;
-import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -61,11 +59,11 @@ import com.google.gson.JsonParser;
  *
  */
 public class JsonMatcher<T> extends DiagnosingMatcher<T> implements CustomisableMatcher<T>, ApprovedFileMatcher<JsonMatcher<T>> {
-
 	private static final int NUM_OF_HASH_CHARS = 6;
 	private static final String UPDATE_IN_PLACE_NAME = "jsonMatcherUpdateInPlace";
 
 	private String pathName;
+	private String customPathName;
 	private String fileName;
 	private String customFileName;
 	private String fileNameWithPath;
@@ -136,7 +134,7 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 
 	@Override
 	public JsonMatcher<T> withPathName(final String pathName) {
-		this.pathName = pathName;
+		this.customPathName = pathName;
 		return this;
 	}
 
@@ -190,29 +188,27 @@ public class JsonMatcher<T> extends DiagnosingMatcher<T> implements Customisable
 		}
 		return false;
 	}
-	
-	private void init() {
-		testMethodName = fileStoreMatcherUtils.getCallerTestMethodName();
-		testClassName = fileStoreMatcherUtils.getCallerTestClassName();
 
-		if (customFileName == null || customFileName.trim().isEmpty()) {
-			fileName = hashFileName(testMethodName);
-		} else {
-			fileName = customFileName;
-		}
+	private void init() {
+		ApprovedFileMeta meta = fileStoreMatcherUtils.getTestCaseMeta(NUM_OF_HASH_CHARS);
+
+		testMethodName = meta.getTestMethodName();
+		testClassName = meta.getTestClassName();
+
+		fileName = isBlank(customFileName) ? meta.getFileName() : customFileName;
+
 		if (uniqueId != null) {
 			fileName += SEPARATOR + uniqueId;
 		}
-		if (pathName == null || pathName.trim().isEmpty()) {
-			testClassNameHash = hashFileName(testClassName);
+
+		if (isBlank(customPathName)) {
+			testClassNameHash = meta.getFilePath();
 			pathName = fileStoreMatcherUtils.getCallerTestClassPath() + File.separator + testClassNameHash;
+		} else {
+			pathName = customPathName;
 		}
 
 		fileNameWithPath = pathName + File.separator + fileName;
-	}
-
-	private String hashFileName(final String fileName) {
-		return Hashing.sha1().hashString(fileName, Charsets.UTF_8).toString().substring(0, NUM_OF_HASH_CHARS);
 	}
 
 	private JsonElement getAsJsonElement(final Gson gson, final Object object) {

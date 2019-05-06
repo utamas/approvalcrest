@@ -1,17 +1,16 @@
 package com.github.karsaig.approvalcrest.matcher;
 
-import static com.github.karsaig.approvalcrest.matcher.FileStoreMatcherUtils.SEPARATOR;
-import static org.junit.Assert.fail;
+import com.github.karsaig.approvalcrest.ComparisonDescription;
+import com.github.karsaig.approvalcrest.matcher.FileStoreMatcherUtils.ApprovedFileMeta;
+import org.hamcrest.Description;
+import org.hamcrest.DiagnosingMatcher;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.hamcrest.Description;
-import org.hamcrest.DiagnosingMatcher;
-
-import com.github.karsaig.approvalcrest.ComparisonDescription;
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
+import static com.github.karsaig.approvalcrest.matcher.FileStoreMatcherUtils.SEPARATOR;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.junit.Assert.fail;
 
 /**
  * <p>
@@ -46,6 +45,7 @@ public class ContentMatcher<T> extends DiagnosingMatcher<T> implements ApprovedF
 	private static final String UPDATE_IN_PLACE_NAME = "jsonMatcherUpdateInPlace";
 
 	private String pathName;
+	private String customPathName;
 	private String fileName;
 	private String customFileName;
 	private String fileNameWithPath;
@@ -99,32 +99,30 @@ public class ContentMatcher<T> extends DiagnosingMatcher<T> implements ApprovedF
 
 	@Override
 	public ContentMatcher<T> withPathName(String pathName) {
-		this.pathName = pathName;
+		this.customPathName = pathName;
 		return this;
 	}
 
 	private void init() {
-		testMethodName = fileStoreMatcherUtils.getCallerTestMethodName();
-		testClassName = fileStoreMatcherUtils.getCallerTestClassName();
+		ApprovedFileMeta meta = fileStoreMatcherUtils.getTestCaseMeta(NUM_OF_HASH_CHARS);
 
-		if (customFileName == null || customFileName.trim().isEmpty()) {
-			fileName = hashFileName(testMethodName);
-		} else {
-			fileName = customFileName;
-		}
+		testMethodName = meta.getTestMethodName();
+		testClassName = meta.getTestClassName();
+
+		fileName = isBlank(customFileName) ? meta.getFileName() : customFileName;
+
 		if (uniqueId != null) {
 			fileName += SEPARATOR + uniqueId;
 		}
-		if (pathName == null || pathName.trim().isEmpty()) {
-			testClassNameHash = hashFileName(testClassName);
+
+		if (isBlank(customPathName)) {
+			testClassNameHash = meta.getFilePath();
 			pathName = fileStoreMatcherUtils.getCallerTestClassPath() + File.separator + testClassNameHash;
+		} else {
+			pathName = customPathName;
 		}
 
 		fileNameWithPath = pathName + File.separator + fileName;
-	}
-
-	private String hashFileName(final String fileName) {
-		return Hashing.sha1().hashString(fileName, Charsets.UTF_8).toString().substring(0, NUM_OF_HASH_CHARS);
 	}
 
 	private void createNotApprovedFileIfNotExists(final Object toApprove) {
